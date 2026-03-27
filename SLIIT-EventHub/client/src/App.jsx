@@ -5,42 +5,75 @@ import AppShell  from './components/shared/AppShell';
 import AuthGuard from './components/shared/AuthGuard';
 
 // Public pages
-import SignInPage          from './pages/SignInPage';
-import SignUpPage          from './pages/SignUpPage';
-import ForgotPasswordPage  from './pages/ForgotPasswordPage';
-import ResetPasswordPage   from './pages/ResetPasswordPage';
+import SignInPage         from './pages/SignInPage';
+import SignUpPage         from './pages/SignUpPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage  from './pages/ResetPasswordPage';
 
 // Protected pages
-import HomePage         from './pages/HomePage';
-import EventsPage       from './pages/EventsPage';
-import EventDetailPage  from './pages/EventDetailPage';
-import EventCreatePage  from './pages/EventCreatePage';
+import HomePage                from './pages/HomePage';
+import EventsPage              from './pages/EventsPage';
+import EventDetailPage         from './pages/EventDetailPage';
+import EventCreatePage         from './pages/EventCreatePage';
+import EventEditPage           from './pages/EventEditPage';
+import ProfilePage             from './pages/ProfilePage';
+import AdminDashboardPage      from './pages/AdminDashboardPage';
+import OrganizerDashboardPage  from './pages/OrganizerDashboardPage';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+
         {/* Root redirect */}
         <Route path="/" element={<Navigate to="/signin" replace />} />
 
-        {/* Public routes */}
-        <Route path="/signin"          element={<SignInPage />} />
-        <Route path="/signup"          element={<SignUpPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        {/* Public routes — no login needed */}
+        <Route path="/signin"                element={<SignInPage />} />
+        <Route path="/signup"                element={<SignUpPage />} />
+        <Route path="/forgot-password"       element={<ForgotPasswordPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
-        {/* Protected routes */}
+        {/* Protected routes — login required */}
         <Route element={<AuthGuard />}>
           <Route element={<AppShell />}>
-            <Route path="/home"             element={<HomePage />} />
+
+            {/* Home */}
+            <Route path="/home" element={<HomePage />} />
+
+            {/* Events */}
             <Route path="/events"           element={<EventsPage />} />
             <Route path="/events/create"    element={<EventCreatePage />} />
             <Route path="/events/:id"       element={<EventDetailPage />} />
-            {/* More routes added as we build them */}
+            <Route path="/events/:id/edit"  element={<EventEditPage />} />
+
+            {/* Profile */}
+            <Route path="/profile" element={<ProfilePage />} />
+
+            {/* Dashboards */}
+            <Route
+              path="/admin-dashboard"
+              element={
+                <AuthGuard allowedRoles={['admin']}>
+                  <AdminDashboardPage />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/organizer-dashboard"
+              element={
+                <AuthGuard allowedRoles={['organizer', 'admin']}>
+                  <OrganizerDashboardPage />
+                </AuthGuard>
+              }
+            />
+
           </Route>
         </Route>
 
+        {/* Catch all */}
         <Route path="*" element={<Navigate to="/signin" replace />} />
+
       </Routes>
     </BrowserRouter>
   );

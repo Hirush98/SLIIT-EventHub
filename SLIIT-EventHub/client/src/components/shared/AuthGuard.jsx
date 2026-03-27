@@ -1,7 +1,10 @@
 import { useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
 
-const AuthGuard = ({ allowedRoles }) => {
+// AuthGuard — protects routes from non-logged-in users
+// Also optionally restricts by role
+
+const AuthGuard = ({ allowedRoles, children }) => {
   const { isAuthenticated, currentUser } = useSelector((s) => s.user);
 
   // Not logged in → redirect to sign in
@@ -14,7 +17,9 @@ const AuthGuard = ({ allowedRoles }) => {
     return <Navigate to="/home" replace />;
   }
 
-  return <Outlet />;
+  // If children passed directly (nested usage), render them
+  // Otherwise render Outlet (route nesting usage)
+  return children ? <>{children}</> : <Outlet />;
 };
 
 export default AuthGuard;
