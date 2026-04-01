@@ -1,165 +1,42 @@
-const UserAccount = require('../models/UserAccount');
+const express   = require('express');
+const cors      = require('cors');
+const dotenv    = require('dotenv');
+const path      = require('path');
+const connectDB = require('./src/config/db');
 
-// ── GET /api/admin/users ───────────────────────────────────
-// List all users with search + filter
-const getAllUsers = async (req, res, next) => {
-  try {
-    const { search, role, page = 1, limit = 20 } = req.query;
+dotenv.config();
+connectDB();
 
-    const filter = {};
-    if (role)   filter.role = role;
-    if (search) {
-      filter.$or = [
-        { firstName: { $regex: search, $options: 'i' } },
-        { lastName:  { $regex: search, $options: 'i' } },
-        { email:     { $regex: search, $options: 'i' } }
-      ];
-    }
+const app = express();
 
-    const skip  = (Number(page) - 1) * Number(limit);
-    const total = await UserAccount.countDocuments(filter);
+app.use(cors({
+  origin:      process.env.CLIENT_URL || 'http://localhost:5173',
+  credentials: true
+}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-    const users = await UserAccount
-      .find(filter)
-      .select('-password -resetPasswordToken -resetPasswordExpiry')
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(Number(limit));
+// Serve uploaded images
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-    res.status(200).json({
-      success: true,
-      total,
-      page:  Number(page),
-      pages: Math.ceil(total / Number(limit)),
-      data:  users.map((u) => ({
-        id:        u._id,
-        firstName: u.firstName,
-        lastName:  u.lastName,
-        email:     u.email,
-        role:      u.role,
-        isActive:  u.isActive,
-        createdAt: u.createdAt
-      }))
-    });
-  } catch (err) { next(err); }
-};
+// Routes
+app.use('/api/auth',   require('./src/routes/authRoutes'));
+app.use('/api/events', require('./src/routes/eventRoutes'));
+app.use('/api/admin',  require('./src/routes/adminRoutes'));
 
-// ── PUT /api/admin/users/:id/role ──────────────────────────
-// Change user role
-const changeUserRole = async (req, res, next) => {
-  try {
-    const { role } = req.body;
-    const validRoles = ['participant', 'organizer', 'admin'];
+app.get('/', (req, res) => {
+  res.json({ message: 'SLIIT EventHub API running ✅' });
+});
 
-    if (!validRoles.includes(role)) {
-      return res.status(400).json({
-        success: false,
-        message: `Role must be one of: ${validRoles.join(', ')}`
-      });
-    }
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || 'Internal server error'
+  });
+});
 
-    // Prevent admin from changing their own role
-    if (req.params.id === req.user._id.toString()) {
-      return res.status(400).json({
-        success: false,
-        message: 'You cannot change your own role'
-      });
-    }
-
-    const user = await UserAccount.findByIdAndUpdate(
-      req.params.id,
-      { role },
-      { new: true }
-    ).select('-password');
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: `User role updated to ${role}`,
-      data: {
-        id:        user._id,
-        firstName: user.firstName,
-        lastName:  user.lastName,
-        email:     user.email,
-        role:      user.role,
-        isActive:  user.isActive
-      }
-    });
-  } catch (err) { next(err); }
-};
-
-// ── PUT /api/admin/users/:id/status ───────────────────────
-// Activate or deactivate a user account
-const toggleUserStatus = async (req, res, next) => {
-  try {
-    const { isActive } = req.body;
-
-    // Prevent admin from deactivating themselves
-    if (req.params.id === req.user._id.toString()) {
-      return res.status(400).json({
-        success: false,
-        message: 'You cannot deactivate your own account'
-      });
-    }
-
-    const user = await UserAccount.findByIdAndUpdate(
-      req.params.id,
-      { isActive },
-      { new: true }
-    ).select('-password');
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: `User account ${isActive ? 'activated' : 'deactivated'}`,
-      data: {
-        id:        user._id,
-        firstName: user.firstName,
-        lastName:  user.lastName,
-        email:     user.email,
-        role:      user.role,
-        isActive:  user.isActive
-      }
-    });
-  } catch (err) { next(err); }
-};
-
-// ── GET /api/admin/stats ───────────────────────────────────
-// Platform statistics
-const getPlatformStats = async (req, res, next) => {
-  try {
-    const totalUsers      = await UserAccount.countDocuments();
-    const activeUsers     = await UserAccount.countDocuments({ isActive: true });
-    const organizerCount  = await UserAccount.countDocuments({ role: 'organizer' });
-    const participantCount = await UserAccount.countDocuments({ role: 'participant' });
-
-    res.status(200).json({
-      success: true,
-      data: {
-        totalUsers,
-        activeUsers,
-        organizerCount,
-        participantCount
-      }
-    });
-  } catch (err) { next(err); }
-};
-
-module.exports = {
-  getAllUsers,
-  changeUserRole,
-  toggleUserStatus,
-  getPlatformStats
-};
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`SLIIT EventHub server running on port ${PORT}`);
+});
