@@ -23,6 +23,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth',   require('./src/routes/authRoutes'));
 app.use('/api/events', require('./src/routes/eventRoutes'));
 app.use('/api/admin',  require('./src/routes/adminRoutes'));
+app.use('/api/feedback', require('./src/routes/feedbackRoutes'));
 
 app.get('/', (req, res) => {
   res.json({ message: 'SLIIT EventHub API running ✅' });
