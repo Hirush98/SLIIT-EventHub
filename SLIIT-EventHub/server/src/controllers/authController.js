@@ -175,7 +175,7 @@ const forgotPassword = async (req, res, next) => {
 
     const resetUrl = process.env.NODE_ENV === 'production'
       ? `${process.env.CLIENT_URL}/reset-password/${rawToken}`
-      : `http://localhost:5173/reset-password/${rawToken}`;
+      : `http://localhost:3000/reset-password/${rawToken}`;
 
     try {
       await sendPasswordResetEmail({ email: user.email, resetUrl });

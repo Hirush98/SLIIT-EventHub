@@ -2,7 +2,18 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI);
+    const mongoUri =
+      process.env.MONGODB_URI ||
+      process.env.MONGO_URI ||
+      process.env.DATABASE_URL;
+
+    if (!mongoUri) {
+      throw new Error(
+        'Missing MongoDB URI. Set MONGODB_URI (or MONGO_URI / DATABASE_URL) in server/.env'
+      );
+    }
+
+    const conn = await mongoose.connect(mongoUri);
     console.log(`MongoDB connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`MongoDB connection error: ${error.message}`);
