@@ -21,6 +21,7 @@ import OrganizerDashboardPage from './pages/OrganizerDashboardPage';
 import AnnouncementsPage      from './pages/AnnouncementsPage';
 import UserManagementPage     from './pages/UserManagementPage';
 import SettingsPage           from './pages/SettingsPage';
+import RiskAnalysisPage       from './pages/RiskAnalysisPage';
 
 function App() {
   return (
@@ -60,6 +61,13 @@ function App() {
               element={
                 <AuthGuard allowedRoles={['admin']}>
                   <AdminDashboardPage />
+                </AuthGuard>
+              }
+            />
+            <Route path="/risk-analysis"
+              element={
+                <AuthGuard allowedRoles={['admin']}>
+                  <RiskAnalysisPage />
                 </AuthGuard>
               }
             />
