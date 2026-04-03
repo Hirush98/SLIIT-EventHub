@@ -2,19 +2,19 @@ import { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useSelector } from 'react-redux';
-import useAuth     from '../hooks/useAuth';
-import InputField  from '../components/ui/InputField';
-import Button      from '../components/ui/Button';
+import useAuth from '../hooks/useAuth';
+import InputField from '../components/ui/InputField';
+import Button from '../components/ui/Button';
 
 const ROLE_STYLES = {
-  admin:       'bg-red-100    text-red-700',
-  organizer:   'bg-blue-100   text-blue-700',
+  admin: 'bg-red-100    text-red-700',
+  organizer: 'bg-blue-100   text-blue-700',
   participant: 'bg-green-100  text-green-700',
 };
 
 const ROLE_DESCRIPTIONS = {
-  admin:       'Full platform access. Can approve events and manage users.',
-  organizer:   'Can create and manage events. Events require admin approval.',
+  admin: 'Full platform access. Can approve events and manage users.',
+  organizer: 'Can create and manage events. Events require admin approval.',
   participant: 'Can browse and register for approved campus events.',
 };
 
@@ -28,16 +28,16 @@ const profileSchema = Yup.object({
 });
 
 const ProfilePage = () => {
-  const { currentUser }             = useSelector((s) => s.user);
-  const { editProfile, isLoading }  = useAuth();
-  const [isEditing,   setIsEditing] = useState(false);
-  const [successMsg,  setSuccessMsg] = useState('');
+  const { currentUser } = useSelector((s) => s.user);
+  const { editProfile, isLoading } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
+  const [successMsg, setSuccessMsg] = useState('');
   const [serverError, setServerError] = useState('');
 
   const formik = useFormik({
     initialValues: {
       firstName: currentUser?.firstName || '',
-      lastName:  currentUser?.lastName  || '',
+      lastName: currentUser?.lastName || '',
     },
     validationSchema: profileSchema,
     enableReinitialize: true,
@@ -55,6 +55,12 @@ const ProfilePage = () => {
       }
     },
   });
+
+  // Helper function
+  const capitalizeFirstLetter = (str) => {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
 
   const handleCancelEdit = () => {
     formik.resetForm();
@@ -81,7 +87,7 @@ const ProfilePage = () => {
                       overflow-hidden">
 
         {/* Top banner */}
-        <div className="h-20 bg-gradient-to-r from-gray-700 to-gray-800"/>
+        <div className="h-20 bg-gradient-to-r from-gray-700 to-gray-800" />
 
         {/* Avatar + name section */}
         <div className="px-6 pb-6">
@@ -112,10 +118,10 @@ const ProfilePage = () => {
                 onClick={() => setIsEditing(true)}
               >
                 <svg className="w-3.5 h-3.5" fill="none"
-                     stroke="currentColor" viewBox="0 0 24 24">
+                  stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0
+                    strokeWidth="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0
                            002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828
                            15H9v-2.828l8.586-8.586z"/>
                 </svg>
@@ -130,9 +136,9 @@ const ProfilePage = () => {
                             border border-green-200 text-green-700 text-sm
                             flex items-center gap-2">
               <svg className="w-4 h-4" fill="none"
-                   stroke="currentColor" viewBox="0 0 24 24">
+                stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round"
-                      strokeWidth="2" d="M5 13l4 4L19 7"/>
+                  strokeWidth="2" d="M5 13l4 4L19 7" />
               </svg>
               {successMsg}
             </div>
@@ -149,7 +155,10 @@ const ProfilePage = () => {
             <div className="space-y-4">
               <div>
                 <h2 className="text-xl font-bold text-gray-800">
-                  {currentUser?.firstName} {currentUser?.lastName}
+                  <span>
+                    {capitalizeFirstLetter(currentUser?.firstName)}{' '}
+                    {capitalizeFirstLetter(currentUser?.lastName)}
+                  </span>
                 </h2>
                 <p className="text-sm text-gray-500">{currentUser?.email}</p>
               </div>
@@ -159,7 +168,7 @@ const ProfilePage = () => {
                 <span className={`px-3 py-1 rounded-full text-xs font-semibold
                                  capitalize
                                  ${ROLE_STYLES[currentUser?.role] ||
-                                   'bg-gray-100 text-gray-700'}`}>
+                  'bg-gray-100 text-gray-700'}`}>
                   {currentUser?.role}
                 </span>
               </div>
@@ -167,14 +176,16 @@ const ProfilePage = () => {
               {/* Info grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 {[
-                  { label: 'First Name',  value: currentUser?.firstName },
-                  { label: 'Last Name',   value: currentUser?.lastName  },
-                  { label: 'Email',       value: currentUser?.email     },
-                  { label: 'Role',        value: currentUser?.role,
-                    extra: ROLE_DESCRIPTIONS[currentUser?.role] },
+                  { label: 'First Name', value: currentUser?.firstName },
+                  { label: 'Last Name', value: currentUser?.lastName },
+                  { label: 'Email', value: currentUser?.email },
+                  {
+                    label: 'Role', value: currentUser?.role,
+                    extra: ROLE_DESCRIPTIONS[currentUser?.role]
+                  },
                 ].map(({ label, value, extra }) => (
                   <div key={label}
-                       className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                    className="p-3 bg-gray-50 rounded-lg border border-gray-100">
                     <p className="text-xs font-medium text-gray-400 mb-0.5">
                       {label}
                     </p>
