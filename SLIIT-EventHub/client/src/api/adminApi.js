@@ -15,8 +15,10 @@ adminClient.interceptors.request.use((config) => {
 
 const adminApi = {
   getAllUsers:       async (params = {}) => (await adminClient.get('/users', { params })).data,
-  getPlatformStats: async ()             => (await adminClient.get('/stats')).data,
-  changeUserRole:   async (id, role)     => (await adminClient.put(`/users/${id}/role`, { role })).data,
+  getPlatformStats:     async ()             => (await adminClient.get('/stats')).data,
+  getRiskAnalysis:      async ()             => (await adminClient.get('/risk-analysis')).data,
+  getParticipantRisk:   async ()             => (await adminClient.get('/participant-risk')).data,
+  changeUserRole:       async (id, role)     => (await adminClient.put(`/users/${id}/role`, { role })).data,
   toggleUserStatus: async (id, isActive) => (await adminClient.put(`/users/${id}/status`, { isActive })).data,
 };
 
