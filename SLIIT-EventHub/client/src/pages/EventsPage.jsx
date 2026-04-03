@@ -39,7 +39,7 @@ const EventsPage = () => {
       const res = await eventApi.getAllEvents(params);
       setEvents(res.data || []);
       setTotal(res.total || 0);
-    } catch (err) {
+    } catch {
       setError('Failed to load events. Please try again.');
     } finally {
       setIsLoading(false);

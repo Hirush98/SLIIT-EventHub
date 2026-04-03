@@ -44,7 +44,6 @@ const SignUpForm = () => {
     validationSchema: signUpSchema,
     onSubmit: async (values) => {
       try {
-        // eslint-disable-next-line no-unused-vars
         const { confirmPassword: _cp, acceptTerms: _at, ...userData } = values;
         await signUp(userData);
         navigate('/home');
@@ -138,9 +137,9 @@ const SignUpForm = () => {
       </div>
 
       {/* Google */}
-      <div className="flex justify-center">
+      <div className="flex justify-center w-full">
         <GoogleOAuthProvider clientId={clientId || ''}>
-          <GoogleLogin onSuccess={handleGoogleSuccess} onError={() => {}} width="100%" />
+          <GoogleLogin onSuccess={handleGoogleSuccess} onError={() => {}} width={320} />
         </GoogleOAuthProvider>
       </div>
 

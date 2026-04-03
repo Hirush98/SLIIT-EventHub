@@ -115,6 +115,7 @@ const EventForm = ({
       await onSubmit(fd, conflictData);
     }
   });
+  const { eventDate, startTime, duration } = formik.values;
 
   // ── Auto conflict check ──────────────────────────────────
   // Triggers when date + startTime + duration all filled
@@ -141,7 +142,6 @@ const EventForm = ({
 
   // Debounce conflict check — wait 800ms after last change
   useEffect(() => {
-    const { eventDate, startTime, duration } = formik.values;
     if (!eventDate || !startTime || !duration) {
       setConflictData(null);
       setConflictChecked(false);
@@ -155,13 +155,12 @@ const EventForm = ({
       );
     }, 800);
     return () => clearTimeout(conflictTimerRef.current);
-  }, [formik.values.eventDate, formik.values.startTime,
-      formik.values.duration, runConflictCheck, editMode, initialValues]);
+  }, [duration, editMode, eventDate, initialValues, runConflictCheck, startTime]);
 
   // ── Sync calendar date with form date ───────────────────
   useEffect(() => {
-    if (formik.values.eventDate) setCalendarDate(formik.values.eventDate);
-  }, [formik.values.eventDate]);
+    if (eventDate) setCalendarDate(eventDate);
+  }, [eventDate]);
 
   // When calendar date clicked → update form date
   const handleCalendarDateSelect = (date) => {

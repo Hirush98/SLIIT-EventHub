@@ -17,12 +17,29 @@ mongoose.connect(process.env.MONGODB_URI)
 
 const app    = express();
 const server = http.createServer(app);
+const allowedOrigins = (process.env.CLIENT_URL
+  ? process.env.CLIENT_URL.split(',').map((origin) => origin.trim()).filter(Boolean)
+  : ['http://localhost:5173']);
+
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+
+  return /^http:\/\/localhost:\d+$/.test(origin) ||
+    /^http:\/\/127\.0\.0\.1:\d+$/.test(origin);
+};
 
 // ── Socket.IO setup ────────────────────────────────────────
 // This enables real-time communication between server and browser
 const io = new Server(server, {
   cors: {
-    origin:  process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: (origin, callback) => {
+      if (isAllowedOrigin(origin)) {
+        callback(null, true);
+        return;
+      }
+      callback(new Error('CORS origin not allowed'));
+    },
     methods: ['GET', 'POST']
   }
 });
@@ -32,7 +49,13 @@ app.set('io', io);
 
 // ── Middleware ─────────────────────────────────────────────
 app.use(cors({
-  origin:      process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    if (isAllowedOrigin(origin)) {
+      callback(null, true);
+      return;
+    }
+    callback(new Error('CORS origin not allowed'));
+  },
   credentials: true
 }));
 app.use(express.json());

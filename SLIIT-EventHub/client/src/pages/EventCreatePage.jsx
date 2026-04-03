@@ -14,7 +14,7 @@ const EventCreatePage = () => {
   const canCreate = currentUser?.role === 'organizer' ||
                     currentUser?.role === 'admin';
 
-  const handleSubmit = async (formData, conflictData) => {
+  const handleSubmit = async (formData) => {
     setIsSubmitting(true);
     setServerError('');
     try {

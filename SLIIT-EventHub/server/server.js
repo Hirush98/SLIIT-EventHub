@@ -9,8 +9,27 @@ connectDB();
 
 const app = express();
 
+const allowedOrigins = (process.env.CLIENT_URL
+  ? process.env.CLIENT_URL.split(',').map((origin) => origin.trim()).filter(Boolean)
+  : ['http://localhost:5173', 'http://localhost:3000']);
+
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+
+  // Allow local Vite/dev ports without having to edit env every time.
+  return /^http:\/\/localhost:\d+$/.test(origin) ||
+    /^http:\/\/127\.0\.0\.1:\d+$/.test(origin);
+};
+
 app.use(cors({
-  origin:      process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    if (isAllowedOrigin(origin)) {
+      callback(null, true);
+      return;
+    }
+    callback(new Error('CORS origin not allowed'));
+  },
   credentials: true
 }));
 app.use(express.json());
@@ -23,6 +42,9 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth',   require('./src/routes/authRoutes'));
 app.use('/api/events', require('./src/routes/eventRoutes'));
 app.use('/api/admin',  require('./src/routes/adminRoutes'));
+app.use('/api/orders', require('./src/routes/orderRoutes'));
+app.use('/api/notifications', require('./src/routes/notificationRoutes'));
+app.use('/merch',      require('./src/routes/MerchRoute'));
 
 app.get('/', (req, res) => {
   res.json({ message: 'SLIIT EventHub API running ✅' });
@@ -36,7 +58,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`SLIIT EventHub server running on port ${PORT}`);
 });

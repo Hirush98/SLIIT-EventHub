@@ -1,0 +1,213 @@
+.admin-orders-page {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+}
+
+.admin-orders-page .section-heading {
+  margin-bottom: 20px;
+}
+
+.admin-orders-subtitle {
+  max-width: 62ch;
+  margin: 12px 0 0;
+  color: rgba(16, 35, 63, 0.78);
+  font-size: 1rem;
+}
+
+.admin-orders-toplink {
+  margin-bottom: 18px;
+}
+
+.admin-orders-search {
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.admin-orders-search-icon {
+  pointer-events: none;
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  transform: translateY(-50%);
+  color: #9ca3af;
+}
+
+.admin-orders-search input {
+  width: 100%;
+  padding: 10px 16px 10px 38px;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  background: #ffffff;
+  color: #1f2937;
+  font-size: 0.875rem;
+  box-shadow: none;
+}
+
+.admin-orders-search input:focus {
+  outline: none;
+  border-color: #9ca3af;
+  box-shadow: 0 0 0 2px rgba(209, 213, 219, 0.7);
+}
+
+.admin-orders-toplink a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid rgba(26, 79, 156, 0.18);
+  border-radius: 0.5rem;
+  background: rgba(26, 79, 156, 0.08);
+  color: var(--sliit-blue);
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 12px 30px rgba(10, 37, 71, 0.08);
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.admin-orders-toplink a:hover {
+  background: linear-gradient(135deg, var(--sliit-blue), var(--sliit-navy));
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.admin-orders-error,
+.admin-orders-empty,
+.admin-orders-section {
+  border: 1px solid rgba(9, 36, 71, 0.12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 18px 50px rgba(10, 37, 71, 0.1);
+}
+
+.admin-orders-error {
+  padding: 16px 18px;
+  color: #b42318;
+  background: rgba(216, 79, 63, 0.12);
+  font-weight: 700;
+}
+
+.admin-orders-empty {
+  padding: 28px;
+  text-align: center;
+}
+
+.admin-orders-layout {
+  display: grid;
+  gap: 22px;
+}
+
+.admin-orders-section {
+  padding: 24px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(247, 250, 255, 0.94));
+}
+
+.admin-orders-section-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(9, 36, 71, 0.08);
+}
+
+.admin-orders-section-head h2,
+.admin-orders-section-head span {
+  margin: 0;
+}
+
+.admin-orders-section-head span {
+  color: rgba(16, 35, 63, 0.62);
+  font-weight: 700;
+}
+
+.admin-orders-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-orders-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-orders-table tbody tr {
+  transition: background 0.18s ease;
+}
+
+.admin-orders-table tbody tr:hover {
+  background: rgba(26, 79, 156, 0.04);
+}
+
+.admin-orders-table th,
+.admin-orders-table td {
+  padding: 14px 12px;
+  text-align: left;
+  border-top: 1px solid rgba(9, 36, 71, 0.08);
+  vertical-align: top;
+}
+
+.admin-orders-table thead th {
+  border-top: none;
+  color: rgba(16, 35, 63, 0.62);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: rgba(244, 248, 255, 0.92);
+}
+
+.admin-orders-table td strong,
+.admin-orders-table td span {
+  display: block;
+}
+
+.admin-orders-table td span {
+  margin-top: 4px;
+  color: rgba(16, 35, 63, 0.68);
+}
+
+.admin-orders-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 0.5rem;
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+  font-weight: 700;
+}
+
+.admin-orders-view-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid rgba(26, 79, 156, 0.18);
+  border-radius: 0.5rem;
+  background: rgba(26, 79, 156, 0.08);
+  color: var(--sliit-blue);
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.admin-orders-view-link:hover {
+  background: rgba(26, 79, 156, 0.14);
+  transform: translateY(-1px);
+}
+
+.admin-orders-toplink a:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(26, 79, 156, 0.14);
+}
+
+@media (max-width: 720px) {
+  .admin-orders-section-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

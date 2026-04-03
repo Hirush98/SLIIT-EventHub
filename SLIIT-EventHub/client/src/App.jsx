@@ -21,6 +21,15 @@ import OrganizerDashboardPage from './pages/OrganizerDashboardPage';
 import AnnouncementsPage      from './pages/AnnouncementsPage';
 import UserManagementPage     from './pages/UserManagementPage';
 import SettingsPage           from './pages/SettingsPage';
+import AddMerch               from './components/AddMerch/addMerch.jsx';
+import Cart                   from './components/Cart/Cart.jsx';
+import Checkout               from './components/Checkout/Checkout.jsx';
+import AdminOrders            from './components/AdminOrders/AdminOrders.jsx';
+import OrderHistory           from './components/OrderHistory/OrderHistory.jsx';
+import Payments               from './components/Payments/Payments.jsx';
+import GetMerch               from './components/getMerch/getMerch.jsx';
+import ViewMerch              from './components/ViewMerch/ViewMerch.jsx';
+import ViewOrder              from './components/ViewOrder/ViewOrder.jsx';
 
 function App() {
   return (
@@ -67,6 +76,69 @@ function App() {
               element={
                 <AuthGuard allowedRoles={['admin']}>
                   <UserManagementPage />
+                </AuthGuard>
+              }
+            />
+            <Route path="/payments"
+              element={
+                <AuthGuard allowedRoles={['admin']}>
+                  <Payments />
+                </AuthGuard>
+              }
+            />
+            <Route path="/admin-orders"
+              element={
+                <AuthGuard allowedRoles={['admin']}>
+                  <AdminOrders />
+                </AuthGuard>
+              }
+            />
+            <Route path="/merch"
+              element={
+                <AuthGuard allowedRoles={['admin', 'participant']}>
+                  <GetMerch />
+                </AuthGuard>
+              }
+            />
+            <Route path="/addmerch"
+              element={
+                <AuthGuard allowedRoles={['admin']}>
+                  <AddMerch />
+                </AuthGuard>
+              }
+            />
+            <Route path="/merch/:id"
+              element={
+                <AuthGuard allowedRoles={['admin', 'participant']}>
+                  <ViewMerch />
+                </AuthGuard>
+              }
+            />
+            <Route path="/cart"
+              element={
+                <AuthGuard allowedRoles={['participant']}>
+                  <Cart />
+                </AuthGuard>
+              }
+            />
+            <Route path="/checkout"
+              element={
+                <AuthGuard allowedRoles={['participant']}>
+                  <Checkout />
+                </AuthGuard>
+              }
+            />
+            <Route path="/orders"
+              element={
+                <AuthGuard allowedRoles={['participant']}>
+                  <OrderHistory />
+                </AuthGuard>
+              }
+            />
+            <Route path="/orders/view/:orderId"
+              element={
+                <AuthGuard allowedRoles={['admin', 'participant']}>
+                  <ViewOrder />
                 </AuthGuard>
               }
             />
