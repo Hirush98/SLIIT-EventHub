@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import NavBar from './NavBar';
+import PageFooter from './PageFooter';
 
 // AppShell — wraps all protected pages
 // No sidebar — navigation is handled entirely by NavBar
@@ -11,6 +12,7 @@ const AppShell = () => (
         <Outlet />
       </div>
     </main>
+    <PageFooter />
   </div>
 );
 
