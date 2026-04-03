@@ -9,6 +9,7 @@ import Button from '../ui/Button';
 // ── Validation schema ──────────────────────────────────────
 const signInSchema = Yup.object({
   email: Yup.string()
+    .matches(/^[a-zA-Z0-9@.]+$/, 'Only letters, numbers, @ and . are allowed')
     .email('Please enter a valid email address')
     .required('Email is required'),
   password: Yup.string()
@@ -81,7 +82,14 @@ const SignInForm = () => {
           type="email"
           placeholder="you@example.com"
           value={formik.values.email}
-          onChange={formik.handleChange}
+          onChange={(e) => {
+            const value = e.target.value;
+
+            // LIVE validation: allow only letters, numbers, @ and .
+            if (/^[a-zA-Z0-9@.]*$/.test(value)) {
+              formik.setFieldValue('email', value);
+            }
+          }}
           onBlur={formik.handleBlur}
           error={formik.errors.email}
           touched={formik.touched.email}

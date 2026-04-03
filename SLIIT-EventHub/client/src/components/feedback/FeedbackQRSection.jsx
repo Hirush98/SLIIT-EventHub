@@ -8,6 +8,10 @@ const FeedbackQRSection = ({ eventId, isOwner, isAdmin, status }) => {
     const [error, setError] = useState('');
     const [copied, setCopied] = useState(false);
 
+    // ✅ NEW STATE
+    const [feedbackEnabled, setFeedbackEnabled] = useState(false);
+    const [toggling, setToggling] = useState(false);
+
     const canAccess = (isOwner || isAdmin) && ['approved', 'completed'].includes(status);
 
     useEffect(() => {
@@ -18,6 +22,7 @@ const FeedbackQRSection = ({ eventId, isOwner, isAdmin, status }) => {
             try {
                 const res = await feedbackApi.generateFeedbackQR(eventId);
                 setQrData(res);
+                setFeedbackEnabled(res.feedbackEnabled); // ✅ sync state
             } catch (err) {
                 setError(err.response?.data?.message || 'Failed to load QR');
             } finally {
@@ -26,6 +31,25 @@ const FeedbackQRSection = ({ eventId, isOwner, isAdmin, status }) => {
         };
         loadQR();
     }, [eventId, canAccess]);
+
+    // ✅ TOGGLE HANDLER
+    const handleToggleFeedback = async () => {
+        setToggling(true);
+        try {
+            let res;
+            if (feedbackEnabled) {
+                res = await feedbackApi.stopFeedback(eventId);
+            } else {
+                res = await feedbackApi.startFeedback(eventId);
+            }
+            setFeedbackEnabled(res.feedbackEnabled);
+        } catch (err) {
+            alert("Failed to update feedback status");
+            console.error('Toggle error:', err);
+        } finally {
+            setToggling(false);
+        }
+    };
 
     const handleCopy = () => {
         navigator.clipboard.writeText(qrData.url);
@@ -59,6 +83,7 @@ const FeedbackQRSection = ({ eventId, isOwner, isAdmin, status }) => {
 
     return (
         <div className="bg-white rounded-2xl border border-gray-200 shadow-md overflow-hidden transition-all hover:shadow-xl">
+            
             {/* Header */}
             <div className="px-6 py-4 border-b border-gray-100 bg-blue-50/30 flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -67,9 +92,35 @@ const FeedbackQRSection = ({ eventId, isOwner, isAdmin, status }) => {
                         Feedback Access
                     </h2>
                 </div>
-                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">
-                    Organizer Only
-                </span>
+
+                {/* ✅ STATUS + TOGGLE */}
+                <div className="flex items-center gap-2">
+                    <span
+                        className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                            feedbackEnabled
+                                ? 'bg-green-100 text-green-700'
+                                : 'bg-red-100 text-red-700'
+                        }`}
+                    >
+                        {feedbackEnabled ? 'Receiving Feedback' : 'Stopped'}
+                    </span>
+
+                    <button
+                        onClick={handleToggleFeedback}
+                        disabled={toggling}
+                        className={`text-[11px] font-bold px-3 py-1 rounded-lg transition-all shadow-sm ${
+                            feedbackEnabled
+                                ? 'bg-red-500 text-white hover:bg-red-600'
+                                : 'bg-green-500 text-white hover:bg-green-600'
+                        } disabled:opacity-50`}
+                    >
+                        {toggling
+                            ? '...'
+                            : feedbackEnabled
+                            ? 'Stop'
+                            : 'Start'}
+                    </button>
+                </div>
             </div>
 
             <div className="p-8">
@@ -84,6 +135,7 @@ const FeedbackQRSection = ({ eventId, isOwner, isAdmin, status }) => {
                     </div>
                 ) : qrData ? (
                     <div className="flex flex-col md:flex-row items-center gap-10">
+
                         {/* QR Code */}
                         <div className="flex flex-col items-center gap-4">
                             <div className="relative group">
@@ -92,7 +144,9 @@ const FeedbackQRSection = ({ eventId, isOwner, isAdmin, status }) => {
                                     <img
                                         src={qrData.qrCode}
                                         alt="Feedback QR"
-                                        className="w-40 h-40 object-contain"
+                                        className={`w-40 h-40 object-contain ${
+                                            !feedbackEnabled ? 'opacity-40 grayscale' : ''
+                                        }`}
                                     />
                                 </div>
                             </div>
@@ -105,15 +159,13 @@ const FeedbackQRSection = ({ eventId, isOwner, isAdmin, status }) => {
                                 {downloading ? (
                                     <div className="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
                                 ) : (
-                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                    </svg>
+                                    <span>⬇</span>
                                 )}
                                 DOWNLOAD PNG
                             </button>
                         </div>
 
-                        {/* Info & Actions */}
+                        {/* Info */}
                         <div className="flex-1 space-y-5 w-full text-center md:text-left">
                             <div>
                                 <h3 className="text-lg md:text-xl font-semibold text-gray-900">Share with Attendees</h3>
@@ -122,10 +174,10 @@ const FeedbackQRSection = ({ eventId, isOwner, isAdmin, status }) => {
                                 </p>
                             </div>
 
-                            {/* Direct Link Box */}
+                            {/* Link */}
                             <div className="space-y-2">
                                 <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wide ml-1">Direct Link</label>
-                                <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl border border-gray-200 focus-within:ring-2 focus-within:ring-blue-500/30 transition-all">
+                                <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl border border-gray-200">
                                     <input
                                         readOnly
                                         value={qrData.url}
@@ -133,29 +185,18 @@ const FeedbackQRSection = ({ eventId, isOwner, isAdmin, status }) => {
                                     />
                                     <button
                                         onClick={handleCopy}
-                                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-sm transform ${copied
-                                                ? 'bg-green-500 text-white scale-105'
-                                                : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200 hover:scale-105'
-                                            }`}
+                                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
+                                            copied ? 'bg-green-500 text-white' : 'bg-white border'
+                                        }`}
                                     >
-                                        {copied ? (
-                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                                            </svg>
-                                        ) : (
-                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                                            </svg>
-                                        )}
                                         {copied ? 'Copied' : 'Copy'}
                                     </button>
                                 </div>
                             </div>
 
-                            <div className="flex items-start gap-2 text-[12px] md:text-sm text-gray-500 italic bg-gray-50/60 p-2 rounded-lg border border-dashed border-gray-200">
-                                <span>💡</span>
-                                <p>Tip: Include this QR code in your presentation slides or print it on event materials.</p>
-                            </div>
+                            <p className="text-xs text-gray-500 italic">
+                                💡 Tip: Show this QR at the end of your event.
+                            </p>
                         </div>
                     </div>
                 ) : null}

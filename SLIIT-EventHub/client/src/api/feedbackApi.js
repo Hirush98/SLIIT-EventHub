@@ -40,10 +40,29 @@ const feedbackApi = {
         return data;
     },
 
+    // AI summary
     getFeedbackSummary: async (eventId) => {
         const { data } = await feedbackClient.get(`/${eventId}/feedback-summary`);
         return data;
-    }
+    },
+
+    // ✅ START feedback
+    startFeedback: async (eventId) => {
+        const { data } = await feedbackClient.patch(`/start/${eventId}`);
+        return data;
+    },
+
+    // ✅ STOP feedback
+    stopFeedback: async (eventId) => {
+        const { data } = await feedbackClient.patch(`/stop/${eventId}`);
+        return data;
+    },
+
+    // ✅ CHECK feedback status
+    checkFeedbackStatus: async (eventId) => {
+    const { data } = await feedbackClient.get(`/${eventId}/status`);
+    return data;
+}
 
 };
 

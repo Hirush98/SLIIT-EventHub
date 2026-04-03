@@ -6,12 +6,12 @@ const participantSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref:  'UserAccount',
+      ref: 'UserAccount',
       required: true
     },
-    firstName:  { type: String, required: true },
-    lastName:   { type: String, required: true },
-    email:      { type: String, required: true },
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    email: { type: String, required: true },
     registeredAt: { type: Date, default: Date.now }
   },
   { _id: false }
@@ -21,10 +21,10 @@ const participantSchema = new mongoose.Schema(
 // Stored when system detects a time overlap at submission
 const conflictDetailSchema = new mongoose.Schema(
   {
-    eventId:      { type: mongoose.Schema.Types.ObjectId, ref: 'CampusEvent' },
-    title:        String,
-    startTime:    String,
-    endTime:      String,
+    eventId: { type: mongoose.Schema.Types.ObjectId, ref: 'CampusEvent' },
+    title: String,
+    startTime: String,
+    endTime: String,
     organizerName: String
   },
   { _id: false }
@@ -35,48 +35,48 @@ const campusEventSchema = new mongoose.Schema(
   {
     // Basic info
     title: {
-      type:      String,
-      required:  [true, 'Event title is required'],
-      trim:      true,
-      minlength: [5,   'Title must be at least 5 characters'],
+      type: String,
+      required: [true, 'Event title is required'],
+      trim: true,
+      minlength: [5, 'Title must be at least 5 characters'],
       maxlength: [100, 'Title cannot exceed 100 characters']
     },
 
     description: {
-      type:      String,
-      required:  [true, 'Event description is required'],
-      trim:      true,
-      minlength: [20,   'Description must be at least 20 characters'],
+      type: String,
+      required: [true, 'Event description is required'],
+      trim: true,
+      minlength: [20, 'Description must be at least 20 characters'],
       maxlength: [1000, 'Description cannot exceed 1000 characters']
     },
 
     category: {
-      type:     String,
+      type: String,
       required: [true, 'Category is required'],
       enum: {
-        values:  ['Academic', 'Workshop', 'Sports', 'Cultural',
-                  'Social', 'Seminar', 'Competition'],
+        values: ['Academic', 'Workshop', 'Sports', 'Cultural',
+          'Social', 'Seminar', 'Competition'],
         message: '{VALUE} is not a valid category'
       }
     },
 
     // Scheduling
     eventDate: {
-      type:     Date,
+      type: Date,
       required: [true, 'Event date is required']
     },
 
     startTime: {
-      type:     String,
+      type: String,
       required: [true, 'Start time is required'],
-      match:    [/^([01]\d|2[0-3]):([0-5]\d)$/, 'Start time must be HH:MM format']
+      match: [/^([01]\d|2[0-3]):([0-5]\d)$/, 'Start time must be HH:MM format']
     },
 
     duration: {
-      type:     Number,
+      type: Number,
       required: [true, 'Duration is required'],
-      min:      [1, 'Duration must be at least 1 hour'],
-      max:      [8, 'Duration cannot exceed 8 hours']
+      min: [1, 'Duration must be at least 1 hour'],
+      max: [8, 'Duration cannot exceed 8 hours']
     },
 
     // End time is calculated from startTime + duration
@@ -87,71 +87,77 @@ const campusEventSchema = new mongoose.Schema(
 
     // Venue — free text, no validation
     venue: {
-      type:     String,
+      type: String,
       required: [true, 'Venue is required'],
-      trim:     true
+      trim: true
     },
 
     capacity: {
-      type:     Number,
+      type: Number,
       required: [true, 'Capacity is required'],
-      min:      [10,  'Capacity must be at least 10'],
-      max:      [500, 'Capacity cannot exceed 500']
+      min: [10, 'Capacity must be at least 10'],
+      max: [500, 'Capacity cannot exceed 500']
     },
 
     // Cover image — stored as filename (uploaded to server)
     coverImage: {
-      type:    String,
+      type: String,
       default: ''
     },
 
     // Optional tags
     tags: {
-      type:    [String],
+      type: [String],
       default: []
     },
 
     // Who created the event
     createdBy: {
-      type:     mongoose.Schema.Types.ObjectId,
-      ref:      'UserAccount',
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'UserAccount',
       required: true
     },
 
     organizerName: {
-      type:     String,
+      type: String,
       required: true,
-      trim:     true
+      trim: true
     },
 
     // Event lifecycle status
     status: {
-      type:    String,
-      enum:    ['pending', 'approved', 'rejected', 'completed', 'cancelled'],
+      type: String,
+      enum: ['pending', 'approved', 'rejected', 'completed', 'cancelled'],
       default: 'pending'
     },
 
     // Rejection reason (set by admin)
     rejectionReason: {
-      type:    String,
+      type: String,
       default: ''
     },
 
     // Registered participants
     participants: {
-      type:    [participantSchema],
+      type: [participantSchema],
       default: []
     },
 
     // Conflict detection fields
     hasConflict: {
-      type:    Boolean,
+      type: Boolean,
       default: false
     },
 
     conflictDetails: {
-      type:    [conflictDetailSchema],
+      type: [conflictDetailSchema],
       default: []
+    },
+
+    // Feedback enabled flag (set by organizer when creating event)
+    feedbackEnabled: {
+      type: Boolean,
+      default: false
     }
   },
   {
@@ -163,9 +169,9 @@ const campusEventSchema = new mongoose.Schema(
 // e.g. startTime="09:00", duration=2 → endTime="11:00"
 campusEventSchema.methods.calculateEndTime = function () {
   const [hours, minutes] = this.startTime.split(':').map(Number);
-  const totalMinutes     = hours * 60 + minutes + this.duration * 60;
-  const endHours         = Math.floor(totalMinutes / 60) % 24;
-  const endMins          = totalMinutes % 60;
+  const totalMinutes = hours * 60 + minutes + this.duration * 60;
+  const endHours = Math.floor(totalMinutes / 60) % 24;
+  const endMins = totalMinutes % 60;
   return `${String(endHours).padStart(2, '0')}:${String(endMins).padStart(2, '0')}`;
 };
 

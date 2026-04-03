@@ -1,5 +1,5 @@
 const Feedback = require("../models/Feedback");
-const Event  = require('../models/CampusEvent');
+const Event = require('../models/CampusEvent');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 
@@ -8,113 +8,121 @@ const mongoose = require("mongoose");
 
 // Submit feedback for an event (logged-in users only)
 exports.submitFeedback = async (req, res, next) => {
-    try {
-        const event = await Event.findById(req.params.eventId);
-        if (!event) {
-            return res.status(404).json({
-                success: false,
-                message: "Event not found",
-            });
-        }
+  try {
+    const event = await Event.findById(req.params.eventId);
 
-        const userId = req.user.id;
-        const { rating, comments } = req.body;
-
-        const feedback = new Feedback({
-            event: event._id,
-            userId,
-            rating,
-            comments,
-        });
-
-        await feedback.save();
-
-        res.status(201).json({
-            success: true,
-            message: "Feedback submitted successfully",
-            data: feedback,
-        });
-
-    } catch (err) {
-
-        // ✅ Handle duplicate feedback (unique index error)
-        if (err.code === 11000) {
-            return res.status(400).json({
-                success: false,
-                message: "You have already submitted feedback for this event",
-            });
-        }
-
-        next(err);
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: "Event not found",
+      });
     }
+
+    if (!event.feedbackEnabled) {
+      return res.status(403).json({
+        success: false,
+        message: "Feedback is closed"
+      });
+    }
+
+    const userId = req.user.id;
+    const { rating, comments } = req.body;
+
+    const feedback = new Feedback({
+      event: event._id,
+      userId,
+      rating,
+      comments,
+    });
+
+    await feedback.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Feedback submitted successfully",
+      data: feedback,
+    });
+
+  } catch (err) {
+
+    // ✅ Handle duplicate feedback (unique index error)
+    if (err.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already submitted feedback for this event",
+      });
+    }
+
+    next(err);
+  }
 };
 
 // Get all feedback for an event (Organizer/Admin only)
 exports.getEventFeedback = async (req, res, next) => {
-    try {
-        const { eventId } = req.params;
+  try {
+    const { eventId } = req.params;
 
-        if (!mongoose.Types.ObjectId.isValid(eventId)) {
-            return res.status(400).json({ success: false, message: "Invalid event ID" });
-        }
-
-        const event = await Event.findById(eventId);
-        if (!event) {
-            return res.status(404).json({ success: false, message: "Event not found" });
-        }
-
-        // Authorization: only event creator or admin/organizer can view feedback
-        if (
-            event.createdBy.toString() !== req.user.id &&
-            !["admin", "organizer"].includes(req.user.role)
-        ) {
-            return res.status(403).json({
-                success: false,
-                message: "Not authorized to view feedback",
-            });
-        }
-
-        // Fetch feedbacks for this event, sorted by newest first
-        const feedbacks = await Feedback.find({ event: eventId })
-            .sort({ createdAt: -1 }) // newest first
-            .select("_id userId rating comments createdAt"); // only send necessary fields
-
-        res.status(200).json({
-            success: true,
-            count: feedbacks.length,
-            data: feedbacks,
-        });
-    } catch (error) {
-        next(error);
+    if (!mongoose.Types.ObjectId.isValid(eventId)) {
+      return res.status(400).json({ success: false, message: "Invalid event ID" });
     }
+
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ success: false, message: "Event not found" });
+    }
+
+    // Authorization: only event creator or admin/organizer can view feedback
+    if (
+      event.createdBy.toString() !== req.user.id &&
+      !["admin", "organizer"].includes(req.user.role)
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized to view feedback",
+      });
+    }
+
+    // Fetch feedbacks for this event, sorted by newest first
+    const feedbacks = await Feedback.find({ event: eventId })
+      .sort({ createdAt: -1 }) // newest first
+      .select("_id userId rating comments createdAt"); // only send necessary fields
+
+    res.status(200).json({
+      success: true,
+      count: feedbacks.length,
+      data: feedbacks,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 // Generate QR code for feedback form (Organizer/Admin only)
 exports.generateFeedbackQR = async (req, res, next) => {
-    try {
+  try {
 
-        const event = await Event.findById(req.params.eventId);
-        if (!event) {
-            return res.status(404).json({ success: false, message: "Event not found" });
-        }
-
-        // Only organizer or admin can generate QR
-        if (event.createdBy.toString() !== req.user.id && req.user.role !== "admin") {
-            return res.status(403).json({ success: false, message: "Not authorized" });
-        }
-
-        // Add redirectTo param so users are sent to login first if needed
-        const feedbackUrl = `${process.env.CLIENT_URL}/signin?redirectTo=/feedback/${event._id}`;
-        const qrCodeDataUrl = await QRCode.toDataURL(feedbackUrl);
-
-        res.status(200).json({
-            success: true,
-            qrCode: qrCodeDataUrl,
-            url: feedbackUrl, // send full link for reference or copying
-        });
-    } catch (err) {
-        next(err);
+    const event = await Event.findById(req.params.eventId);
+    if (!event) {
+      return res.status(404).json({ success: false, message: "Event not found" });
     }
+
+    // Only organizer or admin can generate QR
+    if (event.createdBy.toString() !== req.user.id && req.user.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Not authorized" });
+    }
+
+    // Add redirectTo param so users are sent to login first if needed
+    const feedbackUrl = `${process.env.CLIENT_URL}/signin?redirectTo=/feedback/${event._id}`;
+    const qrCodeDataUrl = await QRCode.toDataURL(feedbackUrl);
+
+    res.status(200).json({
+      success: true,
+      qrCode: qrCodeDataUrl,
+      url: feedbackUrl, // send full link for reference or copying
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 // Get single feedback by ID (Organizer/Admin only)
@@ -140,6 +148,49 @@ exports.getSingleFeedback = async (req, res, next) => {
   }
 };
 
+// start feedback
+exports.startFeedback = async (req, res) => {
+  const event = await Event.findByIdAndUpdate(
+    req.params.eventId,
+    { feedbackEnabled: true },
+    { new: true }
+  );
+
+  res.json({
+    success: true,
+    message: "Feedback started",
+    feedbackEnabled: event.feedbackEnabled
+  });
+};
+
+// stop feedback
+exports.stopFeedback = async (req, res) => {
+  const event = await Event.findByIdAndUpdate(
+    req.params.eventId,
+    { feedbackEnabled: false },
+    { new: true }
+  );
+
+  res.json({
+    success: true,
+    message: "Feedback stopped",
+    feedbackEnabled: event.feedbackEnabled
+  });
+};
+
+// Check if feedback is enabled for an event
+exports.isFeedbackEnabled = async (req, res, next) => {
+  try {
+    const event = await Event.findById(req.params.eventId).select('feedbackEnabled');
+    if (!event) {
+      return res.status(404).json({ success: false, message: 'Event not found' });
+    }
+
+    res.json({ success: true, feedbackEnabled: event.feedbackEnabled });
+  } catch (err) {
+    next(err);
+  }
+};
 
 // Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -153,7 +204,7 @@ exports.getFeedbackSummary = async (req, res, next) => {
     // 1. Fetch feedback from DB
     // We only need comments and ratings to give Gemini better context
     const feedbacks = await Feedback.find({ event: eventId }).select('comments rating -_id');
-    
+
     if (!feedbacks || feedbacks.length === 0) {
       return res.json({ summary: 'No feedback available yet to summarize.' });
     }
@@ -188,9 +239,9 @@ exports.getFeedbackSummary = async (req, res, next) => {
     const response = await result.response;
     const summary = response.text();
 
-    res.json({ 
+    res.json({
       summary: summary || 'Unable to generate summary at this time.',
-      count: feedbacks.length 
+      count: feedbacks.length
     });
 
   } catch (err) {
