@@ -31,6 +31,8 @@ const signUpSchema = Yup.object({
     .oneOf([true], 'You must accept the terms to continue'),
 });
 
+// The form component itself
+
 const SignUpForm = () => {
   const { signUp, googleSignIn, isLoading, error, clearError } = useAuth();
   const navigate = useNavigate();
