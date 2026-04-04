@@ -7,9 +7,9 @@ import InputField from '../components/ui/InputField';
 import Button from '../components/ui/Button';
 
 const ROLE_STYLES = {
-  admin: 'bg-red-100    text-red-700',
-  organizer: 'bg-blue-100   text-blue-700',
-  participant: 'bg-green-100  text-green-700',
+  admin: 'bg-red-100 text-red-700',
+  organizer: 'bg-blue-100 text-blue-700',
+  participant: 'bg-green-100 text-green-700',
 };
 
 const ROLE_DESCRIPTIONS = {
@@ -18,11 +18,22 @@ const ROLE_DESCRIPTIONS = {
   participant: 'Can browse and register for approved campus events.',
 };
 
+// Regex: Start with capital, followed by lowercase letters, spaces allowed
+const nameRegex = /^[A-Z][a-z]*( [A-Z][a-z]*)*$/;
+
 const profileSchema = Yup.object({
   firstName: Yup.string()
+    .matches(
+      nameRegex,
+      'Must start with a capital letter and only contain letters and spaces'
+    )
     .min(2, 'Min 2 characters')
     .required('First name is required'),
   lastName: Yup.string()
+    .matches(
+      nameRegex,
+      'Must start with a capital letter and only contain letters and spaces'
+    )
     .min(2, 'Min 2 characters')
     .required('Last name is required'),
 });
@@ -33,6 +44,17 @@ const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const [serverError, setServerError] = useState('');
+
+  // Helper: Remove numbers/special chars, capitalize first letter of each word
+  const formatName = (value) => {
+    const filtered = value.replace(/[^a-zA-Z ]/g, '');
+    return filtered
+      .split(' ')
+      .map((word) =>
+        word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+      )
+      .join(' ');
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -48,7 +70,6 @@ const ProfilePage = () => {
         await editProfile(values);
         setSuccessMsg('Profile updated successfully.');
         setIsEditing(false);
-        // Clear success message after 3 seconds
         setTimeout(() => setSuccessMsg(''), 3000);
       } catch (err) {
         setServerError(err.message || 'Update failed. Please try again.');
@@ -56,24 +77,21 @@ const ProfilePage = () => {
     },
   });
 
-  // Helper function
-  const capitalizeFirstLetter = (str) => {
-    if (!str) return '';
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  };
-
   const handleCancelEdit = () => {
     formik.resetForm();
     setIsEditing(false);
     setServerError('');
   };
 
-  // Avatar initials
+  const capitalizeFirstLetter = (str) => {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
   const initials = `${currentUser?.firstName?.charAt(0) || ''}${currentUser?.lastName?.charAt(0) || ''}`.toUpperCase();
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-
       {/* Page heading */}
       <div>
         <h1 className="text-2xl font-bold text-gray-800">My Profile</h1>
@@ -83,16 +101,10 @@ const ProfilePage = () => {
       </div>
 
       {/* Profile card */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm
-                      overflow-hidden">
-
-        {/* Top banner */}
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="h-20 bg-gradient-to-r from-gray-700 to-gray-800" />
-
-        {/* Avatar + name section */}
         <div className="px-6 pb-6">
           <div className="flex items-end justify-between -mt-10 mb-4">
-
             {/* Avatar */}
             <div className="w-20 h-20 rounded-2xl border-4 border-white
                             bg-gray-600 flex items-center justify-center
@@ -110,7 +122,6 @@ const ProfilePage = () => {
               )}
             </div>
 
-            {/* Edit button */}
             {!isEditing && (
               <Button
                 variant="secondary"
@@ -130,7 +141,6 @@ const ProfilePage = () => {
             )}
           </div>
 
-          {/* Success / error messages */}
           {successMsg && (
             <div className="mb-4 px-4 py-3 rounded-lg bg-green-50
                             border border-green-200 text-green-700 text-sm
@@ -150,7 +160,6 @@ const ProfilePage = () => {
             </div>
           )}
 
-          {/* View mode */}
           {!isEditing ? (
             <div className="space-y-4">
               <div>
@@ -163,7 +172,6 @@ const ProfilePage = () => {
                 <p className="text-sm text-gray-500">{currentUser?.email}</p>
               </div>
 
-              {/* Role badge */}
               <div className="flex items-center gap-2">
                 <span className={`px-3 py-1 rounded-full text-xs font-semibold
                                  capitalize
@@ -173,7 +181,6 @@ const ProfilePage = () => {
                 </span>
               </div>
 
-              {/* Info grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 {[
                   { label: 'First Name', value: currentUser?.firstName },
@@ -202,7 +209,6 @@ const ProfilePage = () => {
               </div>
             </div>
           ) : (
-            /* Edit mode */
             <form onSubmit={formik.handleSubmit} className="space-y-4">
               <h3 className="text-sm font-semibold text-gray-700">
                 Edit Profile
@@ -215,7 +221,9 @@ const ProfilePage = () => {
                   type="text"
                   placeholder="John"
                   value={formik.values.firstName}
-                  onChange={formik.handleChange}
+                  onChange={(e) =>
+                    formik.setFieldValue('firstName', formatName(e.target.value))
+                  }
                   onBlur={formik.handleBlur}
                   error={formik.errors.firstName}
                   touched={formik.touched.firstName}
@@ -228,7 +236,9 @@ const ProfilePage = () => {
                   type="text"
                   placeholder="Doe"
                   value={formik.values.lastName}
-                  onChange={formik.handleChange}
+                  onChange={(e) =>
+                    formik.setFieldValue('lastName', formatName(e.target.value))
+                  }
                   onBlur={formik.handleBlur}
                   error={formik.errors.lastName}
                   touched={formik.touched.lastName}
@@ -237,7 +247,6 @@ const ProfilePage = () => {
                 />
               </div>
 
-              {/* Email — read only */}
               <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
                 <p className="text-xs font-medium text-gray-400 mb-0.5">
                   Email Address
@@ -272,7 +281,6 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {/* Security section */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
         <h3 className="text-sm font-semibold text-gray-700 mb-4">Security</h3>
         <div className="flex items-center justify-between">
@@ -292,7 +300,6 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {/* Danger zone */}
       <div className="bg-white rounded-xl border border-red-100 shadow-sm p-6">
         <h3 className="text-sm font-semibold text-red-600 mb-1">
           Account Information
