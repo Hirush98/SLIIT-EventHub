@@ -4,8 +4,8 @@ import useAuth from '../../hooks/useAuth';
 
 /* ── Role badge styles ────────────────────────────────────── */
 const ROLE_BADGE = {
-  admin: { bg: 'rgba(240,180,41,0.18)', color: '#92650a', label: 'Admin' },
-  organizer: { bg: 'rgba(26,79,156,0.13)', color: '#1a4f9c', label: 'Organizer' },
+  admin: { bg: 'rgba(240,180,41,0.18)', color: '#ffffff', label: 'Admin' },
+  organizer: { bg: 'rgba(26,79,156,0.13)', color: '#ffffff', label: 'Organizer' },
   participant: { bg: 'rgba(255,255,255,0.15)', color: '#ffffff', label: 'Participant' },
 };
 

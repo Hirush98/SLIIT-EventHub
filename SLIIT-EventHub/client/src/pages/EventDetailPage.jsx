@@ -364,14 +364,14 @@ const EventDetailPage = () => {
 
       <FeedbackQRSection
         eventId={id}
-        isOwner={owner}
+        isOwner={isOwner}
         isAdmin={isAdmin}
         status={event.status}
         setActionMsg={setActionMsg}
       />
 
       {/* 🔹 View Feedback Section */}
-      {(owner || isAdmin) && ['approved', 'completed'].includes(event.status) && (
+      {(isOwner || isAdmin) && ['approved', 'completed'].includes(event.status) && (
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex items-center justify-between">
 
           <div>
