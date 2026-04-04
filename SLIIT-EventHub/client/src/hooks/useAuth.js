@@ -74,10 +74,12 @@ const useAuth = () => {
     try {
       const res = await authApi.updateProfile(profileData);
       dispatch(updateUser(res.user));
+      setLoading(false);
       return res;
     } catch (err) {
       const msg = err.response?.data?.message || 'Profile update failed.';
       dispatch(setError(msg));
+      setLoading(false);
       throw new Error(msg);
     }
   };
