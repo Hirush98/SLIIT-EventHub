@@ -25,21 +25,22 @@ const FeedbackFormPage = () => {
         const eventRes = await eventApi.getEventById(eventId);
         setEvent(eventRes.data);
 
-        // Check if feedback is enabled
-        const statusRes = await feedbackApi.checkFeedbackStatus(eventId);
-        setFeedbackOpen(statusRes.feedbackEnabled);
+        // Check if user already submitted and if feedback is enabled
+        const userStatusRes = await feedbackApi.checkUserFeedbackStatus(eventId);
+        setFeedbackOpen(userStatusRes.feedbackEnabled);
+        setAlreadySubmitted(userStatusRes.alreadySubmitted);
 
-        if (statusRes.feedbackEnabled) {
-          try {
-            const fbRes = await feedbackApi.getEventFeedback(eventId);
-            setFeedbacks(fbRes.data);
-            const exists = fbRes.data.some((f) => f.userId === currentUser?.id);
-            setAlreadySubmitted(exists);
-          } catch {
-            // Silent fail if user cannot fetch feedback list
-          }
+        // Get feedback stats (avg rating & count) - accessible to all users
+        try {
+          const statsRes = await feedbackApi.getFeedbackStats(eventId);
+          setFeedbacks(statsRes.feedbacks);
+        } catch (err) {
+          // Silent fail if feedback stats not available
+          console.warn('Could not load feedback stats:', err);
+          setFeedbacks([]);
         }
-      } catch {
+      } catch (err) {
+        console.error('Error loading event or feedback status:', err);
         setMessage('Failed to load event details.');
       }
     };
