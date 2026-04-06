@@ -60,9 +60,21 @@ const feedbackApi = {
 
     // ✅ CHECK feedback status
     checkFeedbackStatus: async (eventId) => {
-    const { data } = await feedbackClient.get(`/${eventId}/status`);
-    return data;
-}
+        const { data } = await feedbackClient.get(`/${eventId}/status`);
+        return data;
+    },
+
+    // ✅ CHECK if current user already submitted feedback
+    checkUserFeedbackStatus: async (eventId) => {
+        const { data } = await feedbackClient.get(`/${eventId}/user-status`);
+        return data;
+    },
+
+    // ✅ GET feedback stats (avg rating, count - public view)
+    getFeedbackStats: async (eventId) => {
+        const { data } = await feedbackClient.get(`/${eventId}/stats`);
+        return data;
+    }
 
 };
 

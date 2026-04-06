@@ -192,6 +192,64 @@ exports.isFeedbackEnabled = async (req, res, next) => {
   }
 };
 
+// Check if current user has already submitted feedback for this event
+exports.checkUserFeedbackStatus = async (req, res, next) => {
+  try {
+    const { eventId } = req.params;
+    const userId = req.user.id;
+
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: 'Event not found'
+      });
+    }
+
+    // Check if user has already submitted feedback
+    const existingFeedback = await Feedback.findOne({ event: eventId, userId });
+
+    res.json({
+      success: true,
+      alreadySubmitted: !!existingFeedback,
+      feedbackEnabled: event.feedbackEnabled
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Get feedback stats for event (any user - for displaying avg rating)
+exports.getFeedbackStats = async (req, res, next) => {
+  try {
+    const { eventId } = req.params;
+
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: 'Event not found'
+      });
+    }
+
+    // Only fetch count and average rating - no personal data
+    const feedbacks = await Feedback.find({ event: eventId }).select('rating -_id');
+    const count = feedbacks.length;
+    const avgRating = count 
+      ? (feedbacks.reduce((sum, f) => sum + f.rating, 0) / count).toFixed(1)
+      : null;
+
+    res.json({
+      success: true,
+      count,
+      avgRating,
+      feedbacks: feedbacks.map(f => ({ rating: f.rating })) // anonymous ratings
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 

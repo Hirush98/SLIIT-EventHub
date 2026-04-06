@@ -9,7 +9,9 @@ const {
   getFeedbackSummary,
   startFeedback,
   stopFeedback,
-  isFeedbackEnabled
+  isFeedbackEnabled,
+  checkUserFeedbackStatus,
+  getFeedbackStats
 } = require("../controllers/feedbackController");
 const { checkFeedbackEnabled } = require("../middleware/checkFeedbackMiddleware");
 
@@ -66,6 +68,12 @@ router.patch(
 
 // Check feedback status (public)
 router.get("/:eventId/status", protect, isFeedbackEnabled);
+
+// Check if user has already submitted feedback for this event
+router.get("/:eventId/user-status", protect, checkUserFeedbackStatus);
+
+// Get feedback stats (any user - for displaying avg rating)
+router.get("/:eventId/stats", protect, getFeedbackStats);
 
 
 module.exports = router;
