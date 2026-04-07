@@ -1,5 +1,5 @@
-const express  = require('express');
-const router   = express.Router();
+const express = require('express');
+const router = express.Router();
 const { protect, restrictTo } = require('../middleware/authMiddleware');
 const {
   getAllUsers,
@@ -13,11 +13,11 @@ const { getRiskyUsers, getRiskyParticipants } = require('../controllers/riskAnal
 router.use(protect);
 router.use(restrictTo('admin'));
 
-router.get('/users',                getAllUsers);
-router.get('/stats',                getPlatformStats);
-router.get('/risk-analysis',        getRiskyUsers);
-router.get('/participant-risk',     getRiskyParticipants);
-router.put('/users/:id/role',       changeUserRole);
-router.put('/users/:id/status',     toggleUserStatus);
+router.get('/users', getAllUsers);
+router.get('/stats', getPlatformStats);
+router.get('/risk-analysis', getRiskyUsers);
+router.get('/participant-risk', getRiskyParticipants);
+router.put('/users/:id/role', changeUserRole);
+router.put('/users/:id/status', toggleUserStatus);
 
 module.exports = router;

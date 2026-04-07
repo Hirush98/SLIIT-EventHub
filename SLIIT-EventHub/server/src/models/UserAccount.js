@@ -28,6 +28,9 @@ const UserAccountSchema = new mongoose.Schema(
       default: 'participant'
     },
     profilePhoto: { type: String, default: '' },
+    description:  { type: String, default: '' },
+    category:     { type: String, default: 'Other' },
+    memberCount:  { type: Number, default: 0 },
     isActive:     { type: Boolean, default: true },
     resetPasswordToken:  { type: String, select: false },
     resetPasswordExpiry: { type: Date,   select: false }

@@ -1,7 +1,7 @@
-const express   = require('express');
-const cors      = require('cors');
-const dotenv    = require('dotenv');
-const path      = require('path');
+const express = require('express');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const path = require('path');
 const connectDB = require('./src/config/db');
 
 dotenv.config();
@@ -10,7 +10,7 @@ connectDB();
 const app = express();
 
 app.use(cors({
-  origin:      process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: process.env.CLIENT_URL || 'http://localhost:5173',
   credentials: true
 }));
 app.use(express.json());
@@ -20,9 +20,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
-app.use('/api/auth',   require('./src/routes/authRoutes'));
+app.use('/api/auth', require('./src/routes/authRoutes'));
 app.use('/api/events', require('./src/routes/eventRoutes'));
-app.use('/api/admin',  require('./src/routes/adminRoutes'));
+app.use('/api/admin', require('./src/routes/adminRoutes'));
+app.use('/api/feedback', require('./src/routes/clubFeedbackRoutes'));
+app.use('/api/users', require('./src/routes/userRoutes'));
 
 app.get('/', (req, res) => {
   res.json({ message: 'SLIIT EventHub API running ✅' });

@@ -20,7 +20,7 @@ const authApi = {
   register: async (userData) => {
     const { data } = await authClient.post('/register', userData);
     if (data.accessToken) {
-      localStorage.setItem('eh_token',   data.accessToken);
+      localStorage.setItem('eh_token', data.accessToken);
       localStorage.setItem('eh_refresh', data.refreshToken);
     }
     return data;
@@ -29,7 +29,7 @@ const authApi = {
   login: async (email, password) => {
     const { data } = await authClient.post('/login', { email, password });
     if (data.accessToken) {
-      localStorage.setItem('eh_token',   data.accessToken);
+      localStorage.setItem('eh_token', data.accessToken);
       localStorage.setItem('eh_refresh', data.refreshToken);
     }
     return data;
@@ -38,7 +38,7 @@ const authApi = {
   googleLogin: async (idToken) => {
     const { data } = await authClient.post('/google', { idToken });
     if (data.accessToken) {
-      localStorage.setItem('eh_token',   data.accessToken);
+      localStorage.setItem('eh_token', data.accessToken);
       localStorage.setItem('eh_refresh', data.refreshToken);
     }
     return data;

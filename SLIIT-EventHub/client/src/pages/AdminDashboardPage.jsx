@@ -1,23 +1,23 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import eventApi from '../api/eventApi';
-import Button   from '../components/ui/Button';
+import Button from '../components/ui/Button';
 
 const STATUS_STYLES = {
-  pending:   'bg-yellow-100 text-yellow-700',
-  approved:  'bg-green-100  text-green-700',
-  rejected:  'bg-red-100    text-red-700',
+  pending: 'bg-yellow-100 text-yellow-700',
+  approved: 'bg-green-100  text-green-700',
+  rejected: 'bg-red-100    text-red-700',
   completed: 'bg-gray-100   text-gray-600',
   cancelled: 'bg-red-50     text-red-500',
 };
 
 const CATEGORY_STYLES = {
-  Academic:    'bg-blue-100   text-blue-700',
-  Workshop:    'bg-purple-100 text-purple-700',
-  Sports:      'bg-green-100  text-green-700',
-  Cultural:    'bg-pink-100   text-pink-700',
-  Social:      'bg-yellow-100 text-yellow-700',
-  Seminar:     'bg-orange-100 text-orange-700',
+  Academic: 'bg-blue-100   text-blue-700',
+  Workshop: 'bg-purple-100 text-purple-700',
+  Sports: 'bg-green-100  text-green-700',
+  Cultural: 'bg-pink-100   text-pink-700',
+  Social: 'bg-yellow-100 text-yellow-700',
+  Seminar: 'bg-orange-100 text-orange-700',
   Competition: 'bg-red-100    text-red-700',
 };
 
@@ -32,9 +32,9 @@ const StatCard = ({ label, value, icon, color, subtext }) => (
     <div className={`w-12 h-12 rounded-xl flex items-center justify-center
                      flex-shrink-0 ${color}`}>
       <svg className="w-6 h-6 text-white" fill="none"
-           stroke="currentColor" viewBox="0 0 24 24">
+        stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round"
-              strokeWidth="2" d={icon}/>
+          strokeWidth="2" d={icon} />
       </svg>
     </div>
     <div>
@@ -47,11 +47,11 @@ const StatCard = ({ label, value, icon, color, subtext }) => (
 
 const AdminDashboardPage = () => {
   const [pendingEvents, setPendingEvents] = useState([]);
-  const [allEvents,     setAllEvents]     = useState([]);
-  const [isLoading,     setIsLoading]     = useState(true);
+  const [allEvents, setAllEvents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState({});
-  const [actionMsg,     setActionMsg]     = useState('');
-  const [activeTab,     setActiveTab]     = useState('pending');
+  const [actionMsg, setActionMsg] = useState('');
+  const [activeTab, setActiveTab] = useState('pending');
 
   // Fetch events
   useEffect(() => {
@@ -104,32 +104,32 @@ const AdminDashboardPage = () => {
 
   const stats = [
     {
-      label:   'Pending Approval',
-      value:   pendingEvents.length,
-      color:   'bg-yellow-500',
+      label: 'Pending Approval',
+      value: pendingEvents.length,
+      color: 'bg-yellow-500',
       subtext: pendingEvents.length > 0 ? 'Needs your review' : 'All clear',
-      icon:    'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+      icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
     },
     {
-      label:   'Active Events',
-      value:   allEvents.length,
-      color:   'bg-green-600',
+      label: 'Active Events',
+      value: allEvents.length,
+      color: 'bg-green-600',
       subtext: 'Currently approved',
-      icon:    'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
+      icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
     },
     {
-      label:   'Conflict Flagged',
-      value:   pendingEvents.filter((e) => e.hasConflict).length,
-      color:   'bg-orange-500',
+      label: 'Conflict Flagged',
+      value: pendingEvents.filter((e) => e.hasConflict).length,
+      color: 'bg-orange-500',
       subtext: 'Require careful review',
-      icon:    'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z',
+      icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z',
     },
     {
-      label:   'Total Events',
-      value:   pendingEvents.length + allEvents.length,
-      color:   'bg-gray-600',
+      label: 'Total Events',
+      value: pendingEvents.length + allEvents.length,
+      color: 'bg-gray-600',
       subtext: 'All time',
-      icon:    'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
+      icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
     },
   ];
 
@@ -147,7 +147,7 @@ const AdminDashboardPage = () => {
         <Link to="/risk-analysis">
           <Button className="bg-gray-800 hover:bg-gray-900 text-white flex items-center gap-2 shadow-sm">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
             Risk Analysis Center
           </Button>
@@ -176,7 +176,7 @@ const AdminDashboardPage = () => {
         {/* Tab header */}
         <div className="flex border-b border-gray-200">
           {[
-            { key: 'pending',  label: `Pending Approval (${pendingEvents.length})` },
+            { key: 'pending', label: `Pending Approval (${pendingEvents.length})` },
             { key: 'approved', label: `Active Events (${allEvents.length})` },
           ].map((tab) => (
             <button
@@ -185,9 +185,9 @@ const AdminDashboardPage = () => {
               className={`px-5 py-3 text-sm font-medium transition-colors
                          border-b-2 -mb-px
                          ${activeTab === tab.key
-                           ? 'border-gray-800 text-gray-800'
-                           : 'border-transparent text-gray-500 hover:text-gray-700'
-                         }`}
+                  ? 'border-gray-800 text-gray-800'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
             >
               {tab.label}
             </button>
@@ -209,9 +209,9 @@ const AdminDashboardPage = () => {
                 <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center
                                 justify-center mb-3">
                   <svg className="w-6 h-6 text-green-600" fill="none"
-                       stroke="currentColor" viewBox="0 0 24 24">
+                    stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round"
-                          strokeWidth="2" d="M5 13l4 4L19 7"/>
+                      strokeWidth="2" d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
                 <p className="text-gray-500 font-medium">
@@ -228,9 +228,9 @@ const AdminDashboardPage = () => {
                     key={event.id}
                     className={`rounded-xl border p-4 transition-colors
                                ${event.hasConflict
-                                 ? 'border-yellow-200 bg-yellow-50/50'
-                                 : 'border-gray-200 bg-white hover:bg-gray-50'
-                               }`}
+                        ? 'border-yellow-200 bg-yellow-50/50'
+                        : 'border-gray-200 bg-white hover:bg-gray-50'
+                      }`}
                   >
                     <div className="flex items-start justify-between gap-4">
 
@@ -240,7 +240,7 @@ const AdminDashboardPage = () => {
                           <span className={`px-2 py-0.5 rounded-full text-xs
                                            font-semibold
                                            ${CATEGORY_STYLES[event.category] ||
-                                             'bg-gray-100 text-gray-600'}`}>
+                            'bg-gray-100 text-gray-600'}`}>
                             {event.category}
                           </span>
                           {event.hasConflict && (
@@ -264,10 +264,10 @@ const AdminDashboardPage = () => {
                                         text-gray-500">
                           <span className="flex items-center gap-1">
                             <svg className="w-3.5 h-3.5" fill="none"
-                                 stroke="currentColor" viewBox="0 0 24 24">
+                              stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7
+                                strokeWidth="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7
                                        a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                             </svg>
                             {formatDate(event.eventDate)}
@@ -275,10 +275,10 @@ const AdminDashboardPage = () => {
                           <span>{event.startTime} – {event.endTime}</span>
                           <span className="flex items-center gap-1">
                             <svg className="w-3.5 h-3.5" fill="none"
-                                 stroke="currentColor" viewBox="0 0 24 24">
+                              stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0
+                                strokeWidth="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0
                                        01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z
                                        M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                             </svg>
@@ -327,7 +327,7 @@ const AdminDashboardPage = () => {
                         </Button>
                         <Link to={`/events/${event.id}`}>
                           <Button size="sm" variant="ghost"
-                                  className="w-full text-center">
+                            className="w-full text-center">
                             View
                           </Button>
                         </Link>
@@ -369,7 +369,7 @@ const AdminDashboardPage = () => {
                       <span className={`px-2 py-0.5 rounded-full text-xs
                                        font-semibold
                                        ${CATEGORY_STYLES[event.category] ||
-                                         'bg-gray-100 text-gray-600'}`}>
+                        'bg-gray-100 text-gray-600'}`}>
                         {event.category}
                       </span>
                       <span className="text-xs text-gray-400">

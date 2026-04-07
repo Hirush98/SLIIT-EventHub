@@ -1,5 +1,5 @@
-const crypto       = require('crypto');
-const UserAccount  = require('../models/UserAccount');
+const crypto = require('crypto');
+const UserAccount = require('../models/UserAccount');
 const { OAuth2Client } = require('google-auth-library');
 const {
   generateAccessToken,
@@ -30,13 +30,13 @@ const register = async (req, res, next) => {
       password
     });
 
-    const accessToken  = generateAccessToken(user);
+    const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
     res.status(201).json({
-      success:      true,
-      message:      'Account created successfully.',
-      user:         buildUserPayload(user),
+      success: true,
+      message: 'Account created successfully.',
+      user: buildUserPayload(user),
       accessToken,
       refreshToken
     });
@@ -71,13 +71,13 @@ const login = async (req, res, next) => {
       });
     }
 
-    const accessToken  = generateAccessToken(user);
+    const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
     res.status(200).json({
-      success:      true,
-      message:      'Login successful.',
-      user:         buildUserPayload(user),
+      success: true,
+      message: 'Login successful.',
+      user: buildUserPayload(user),
       accessToken,
       refreshToken
     });
@@ -90,7 +90,7 @@ const getMe = async (req, res, next) => {
     const user = await UserAccount.findById(req.user._id);
     res.status(200).json({
       success: true,
-      user:    buildUserPayload(user)
+      user: buildUserPayload(user)
     });
   } catch (err) { next(err); }
 };
@@ -109,13 +109,13 @@ const updateProfile = async (req, res, next) => {
     }
 
     if (firstName) user.firstName = firstName;
-    if (lastName)  user.lastName  = lastName;
+    if (lastName) user.lastName = lastName;
     await user.save();
 
     res.status(200).json({
       success: true,
       message: 'Profile updated successfully.',
-      user:    buildUserPayload(user)
+      user: buildUserPayload(user)
     });
   } catch (err) { next(err); }
 };
@@ -132,7 +132,7 @@ const refreshToken = async (req, res, next) => {
     }
 
     const decoded = verifyRefreshToken(token);
-    const user    = await UserAccount.findById(decoded.id);
+    const user = await UserAccount.findById(decoded.id);
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -141,7 +141,7 @@ const refreshToken = async (req, res, next) => {
     }
 
     res.status(200).json({
-      success:     true,
+      success: true,
       accessToken: generateAccessToken(user)
     });
   } catch (err) {
@@ -184,7 +184,7 @@ const forgotPassword = async (req, res, next) => {
         message: 'Password reset link sent to your email.'
       });
     } catch {
-      user.resetPasswordToken  = undefined;
+      user.resetPasswordToken = undefined;
       user.resetPasswordExpiry = undefined;
       await user.save({ validateBeforeSave: false });
       res.status(500).json({
@@ -198,7 +198,7 @@ const forgotPassword = async (req, res, next) => {
 // ── POST /api/auth/reset-password/:token ──────────────────
 const resetPassword = async (req, res, next) => {
   try {
-    const { token }    = req.params;
+    const { token } = req.params;
     const { password } = req.body;
 
     if (!password || password.length < 8) {
@@ -214,7 +214,7 @@ const resetPassword = async (req, res, next) => {
       .digest('hex');
 
     const user = await UserAccount.findOne({
-      resetPasswordToken:  hashedToken,
+      resetPasswordToken: hashedToken,
       resetPasswordExpiry: { $gt: Date.now() }
     });
 
@@ -225,15 +225,15 @@ const resetPassword = async (req, res, next) => {
       });
     }
 
-    user.password            = password;
-    user.resetPasswordToken  = undefined;
+    user.password = password;
+    user.resetPasswordToken = undefined;
     user.resetPasswordExpiry = undefined;
     await user.save();
 
     res.status(200).json({
-      success:      true,
-      message:      'Password reset successful. You can now log in.',
-      accessToken:  generateAccessToken(user),
+      success: true,
+      message: 'Password reset successful. You can now log in.',
+      accessToken: generateAccessToken(user),
       refreshToken: generateRefreshToken(user)
     });
   } catch (err) { next(err); }
@@ -250,8 +250,8 @@ const googleAuth = async (req, res, next) => {
       });
     }
 
-    const client  = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-    const ticket  = await client.verifyIdToken({
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    const ticket = await client.verifyIdToken({
       idToken,
       audience: process.env.GOOGLE_CLIENT_ID
     });
@@ -272,21 +272,21 @@ const googleAuth = async (req, res, next) => {
     if (!user) {
       const tempPassword = crypto.randomBytes(16).toString('hex') + 'Aa1!';
       user = await UserAccount.create({
-        firstName: given_name  || 'User',
-        lastName:  family_name || '',
+        firstName: given_name || 'User',
+        lastName: family_name || '',
         email,
-        password:  tempPassword,
+        password: tempPassword,
         profilePhoto: picture || ''
       });
     }
 
-    const accessToken  = generateAccessToken(user);
+    const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
     res.status(200).json({
-      success:      true,
-      message:      'Google login successful.',
-      user:         buildUserPayload(user, { profilePhoto: picture || user.profilePhoto }),
+      success: true,
+      message: 'Google login successful.',
+      user: buildUserPayload(user, { profilePhoto: picture || user.profilePhoto }),
       accessToken,
       refreshToken
     });
