@@ -1,1 +1,47 @@
 @import "tailwindcss";
+
+:root {
+  --sliit-navy: #092447;
+  --sliit-blue: #1a4f9c;
+  --sliit-gold: #f0b429;
+  --sliit-ink: #10233f;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--sliit-ink);
+  position: relative;
+  background: linear-gradient(180deg, #f5f8fd 0%, #edf3fb 52%, #f8fbff 100%);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(rgba(245, 248, 253, 0.78), rgba(237, 243, 251, 0.82)),
+    radial-gradient(circle at top left, rgba(240, 180, 41, 0.16), transparent 28%),
+    radial-gradient(circle at top right, rgba(26, 79, 156, 0.14), transparent 32%),
+    url("./SLIIT-malabe.jpg") center / cover no-repeat;
+  filter: blur(10px);
+  transform: scale(1.05);
+  z-index: -2;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.18);
+  z-index: -1;
+  pointer-events: none;
+}
+
+a {
+  color: inherit;
+}

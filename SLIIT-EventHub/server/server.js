@@ -9,29 +9,44 @@ connectDB();
 
 const app = express();
 
-const allowedOrigins = new Set([
-  process.env.CLIENT_URL || 'http://localhost:3000',
-  'http://localhost:3000',
-  'http://127.0.0.1:3000',
-]);
+const allowedOrigins = (process.env.CLIENT_URL
+  ? process.env.CLIENT_URL.split(',').map((origin) => origin.trim()).filter(Boolean)
+  : ['http://localhost:5173', 'http://localhost:3000']);
+
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+
+  return /^http:\/\/localhost:\d+$/.test(origin) ||
+         /^http:\/\/127\.0\.0\.1:\d+$/.test(origin);
+};
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow non-browser requests (no Origin header) and known frontend origins.
-    if (!origin || allowedOrigins.has(origin)) {
+    if (isAllowedOrigin(origin)) {
       return callback(null, true);
     }
-    return callback(new Error(`CORS blocked for origin: ${origin}`));
+    return callback(new Error('CORS origin not allowed'));
   },
   credentials: true
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve uploaded images
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Routes
 app.use('/api/auth', require('./src/routes/authRoutes'));
+app.use('/api/events', require('./src/routes/eventRoutes'));
+app.use('/api/admin', require('./src/routes/adminRoutes'));
+app.use('/api/orders', require('./src/routes/orderRoutes'));
+app.use('/api/notifications', require('./src/routes/notificationRoutes'));
+app.use('/merch', require('./src/routes/MerchRoute'));
 
 app.get('/', (req, res) => {
-  res.json({ message: 'SLIIT EventHub API is running' });
+  res.json({ message: 'SLIIT EventHub API running ✅' });
 });
 
 app.use((err, req, res, next) => {

@@ -1,0 +1,125 @@
+/* Navbar container */
+.navbar {
+  background: rgba(9, 36, 71, 0.88);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 15px 40px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Inner layout */
+.navbar-container {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* Logo */
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+  color: #f0b429;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+}
+
+.nav-brand-image {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  padding: 4px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* Menu */
+.nav-menu {
+  list-style: none;
+  display: flex;
+  gap: 30px;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-menu a {
+  text-decoration: none;
+  color: #f5f8ff;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.nav-menu a.active,
+.nav-menu a:hover {
+  color: #f0b429;
+}
+
+/* Right section */
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+/* Cart */
+.cart {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  position: relative;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.cart:hover {
+  background: rgba(240, 180, 41, 0.2);
+  transform: translateY(-1px);
+}
+
+.cart-icon {
+  font-size: 18px;
+}
+
+/* Cart badge */
+.cart-count {
+  background: #f0b429;
+  color: #092447;
+  border-radius: 999px;
+  min-width: 24px;
+  padding: 3px 8px;
+  font-size: 12px;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .navbar {
+    padding: 14px 18px;
+  }
+
+  .navbar-container {
+    justify-content: center;
+  }
+
+  .nav-menu {
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

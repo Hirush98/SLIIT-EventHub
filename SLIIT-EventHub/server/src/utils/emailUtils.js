@@ -1,6 +1,10 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async ({ to, subject, html }) => {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    throw new Error('Email configuration is incomplete. Set EMAIL_USER and EMAIL_PASS.');
+  }
+
   const transporter = nodemailer.createTransport({
     service: process.env.EMAIL_SERVICE || 'gmail',
     auth: {
@@ -9,12 +13,17 @@ const sendEmail = async ({ to, subject, html }) => {
     }
   });
 
-  await transporter.sendMail({
-    from:    process.env.EMAIL_FROM || 'SLIIT EventHub <noreply@sliiteventhub.com>',
-    to,
-    subject,
-    html
-  });
+  try {
+    await transporter.sendMail({
+      from:    process.env.EMAIL_FROM || 'SLIIT EventHub <noreply@sliiteventhub.com>',
+      to,
+      subject,
+      html
+    });
+  } catch (error) {
+    const reason = error.response || error.message || 'Unknown email transport error';
+    throw new Error(`Failed to send email: ${reason}`);
+  }
 };
 
 // Password reset email template

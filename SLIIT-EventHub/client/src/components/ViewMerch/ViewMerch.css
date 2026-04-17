@@ -1,0 +1,217 @@
+.detail-section,
+.form-section {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+}
+
+.detail-card,
+.sliit-form-card {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(9, 36, 71, 0.12);
+  border-radius: 24px;
+  box-shadow: 0 18px 50px rgba(10, 37, 71, 0.12);
+}
+
+.detail-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 24px;
+  padding: 32px;
+}
+
+.detail-popup-message {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(19, 78, 74, 0.95);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  box-shadow: 0 14px 28px rgba(19, 78, 74, 0.24);
+  z-index: 2;
+}
+
+.detail-copy h1 {
+  margin: 8px 0 12px;
+  color: var(--sliit-navy);
+}
+
+.detail-price {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--sliit-blue);
+}
+
+.detail-description {
+  color: #5d6d86;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 20px 0 24px;
+}
+
+.detail-meta span {
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(26, 79, 156, 0.08);
+  color: var(--sliit-blue);
+  font-weight: 700;
+}
+
+.detail-visual img {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 22px;
+  object-fit: cover;
+  box-shadow: 0 18px 50px rgba(10, 37, 71, 0.12);
+}
+
+.section-heading {
+  margin-bottom: 24px;
+}
+
+.section-heading h1 {
+  margin: 10px 0 0;
+  font-size: clamp(1.9rem, 4vw, 3rem);
+  color: var(--sliit-navy);
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--sliit-gold);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.sliit-form-card {
+  width: min(720px, 100%);
+  margin: 0 auto;
+  padding: 32px;
+}
+
+.form-field {
+  display: block;
+  margin-bottom: 18px;
+}
+
+.form-field span {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: var(--sliit-navy);
+}
+
+.form-field input,
+.form-field textarea {
+  width: 100%;
+  border: 1px solid rgba(9, 36, 71, 0.14);
+  border-radius: 16px;
+  padding: 14px 16px;
+  background: #f9fbff;
+  color: var(--sliit-ink);
+  font: inherit;
+}
+
+.form-field textarea {
+  min-height: 130px;
+  resize: vertical;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+  outline: 2px solid rgba(26, 79, 156, 0.18);
+  border-color: var(--sliit-blue);
+}
+
+.form-error {
+  display: block;
+  margin-top: 8px;
+  color: #c53d2f;
+  font-weight: 600;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.detail-primary-button,
+.detail-secondary-button,
+.detail-danger-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 150px;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-weight: 700;
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.detail-primary-button:hover,
+.detail-secondary-button:hover,
+.detail-danger-button:hover {
+  transform: translateY(-1px);
+}
+
+.detail-primary-button {
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--sliit-blue), var(--sliit-navy));
+  box-shadow: 0 10px 24px rgba(26, 79, 156, 0.28);
+}
+
+.detail-secondary-button {
+  color: var(--sliit-navy);
+  background: rgba(9, 36, 71, 0.08);
+  border: 1px solid rgba(9, 36, 71, 0.12);
+}
+
+.detail-danger-button {
+  color: #ffffff;
+  background: linear-gradient(135deg, #d84f3f, #c53d2f);
+  box-shadow: 0 10px 24px rgba(197, 61, 47, 0.22);
+}
+
+.back-link {
+  display: inline-flex;
+  margin-top: 18px;
+}
+
+@media (max-width: 820px) {
+  .detail-card {
+    grid-template-columns: 1fr;
+    padding: 24px;
+  }
+
+  .sliit-form-card {
+    padding: 24px;
+  }
+
+  .button-row {
+    flex-direction: column;
+  }
+
+  .detail-primary-button,
+  .detail-secondary-button,
+  .detail-danger-button,
+  .back-link {
+    width: 100%;
+  }
+}

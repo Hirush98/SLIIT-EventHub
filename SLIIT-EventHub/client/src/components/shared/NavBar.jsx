@@ -1,0 +1,352 @@
+import { useState, useRef, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import useAuth from '../../hooks/useAuth';
+import notificationApi from '../../api/notificationApi';
+
+const ROLE_BADGE = {
+  admin:       'bg-[rgba(240,180,41,0.18)] text-[#8a6200]',
+  organizer:   'bg-[rgba(26,79,156,0.12)] text-[#1a4f9c]',
+  participant: 'bg-[rgba(9,36,71,0.12)] text-[#092447]',
+};
+
+const NavLink = ({ to, label }) => {
+  const location = useLocation();
+  const isActive = location.pathname.startsWith(to);
+  return (
+    <Link to={to}
+      className={`rounded-full px-3.5 py-2 text-sm font-medium transition-all duration-200
+        ${isActive
+          ? 'bg-[linear-gradient(135deg,#1a4f9c,#092447)] !text-white shadow-[0_14px_30px_rgba(9,36,71,0.22)]'
+          : '!text-white hover:bg-white/10 hover:!text-white'}`}>
+      {label}
+    </Link>
+  );
+};
+
+const DropdownItem = ({ to, label, icon, description, onClick, danger }) => (
+  <Link to={to} onClick={onClick}
+      className={`flex items-start gap-3 px-4 py-3 rounded-xl transition-all duration-150 group
+      ${danger ? 'hover:bg-red-50' : 'hover:bg-slate-50'}`}>
+    <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5
+      ${danger ? 'bg-red-100 group-hover:bg-red-200' : 'bg-slate-100 group-hover:bg-[rgba(26,79,156,0.12)]'}`}>
+      <svg className={`w-4 h-4 ${danger ? 'text-red-500' : 'text-slate-600 group-hover:text-[#1a4f9c]'}`}
+        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={icon}/>
+      </svg>
+    </div>
+    <div>
+      <p className={`text-sm font-medium ${danger ? 'text-red-600' : 'text-slate-800'}`}>{label}</p>
+      {description && <p className="mt-0.5 text-xs leading-relaxed text-slate-400">{description}</p>}
+    </div>
+  </Link>
+);
+
+const MobileLink = ({ to, label, onClick }) => {
+  const location = useLocation();
+  const isActive = location.pathname.startsWith(to);
+  return (
+    <Link to={to} onClick={onClick}
+      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all
+        ${isActive ? 'bg-[linear-gradient(135deg,#1a4f9c,#092447)] text-white' : 'text-white hover:bg-white/10'}`}>
+      {label}
+    </Link>
+  );
+};
+
+const NavBar = () => {
+  const { currentUser, signOut } = useAuth();
+  const navigate   = useNavigate();
+  const [dropOpen,   setDropOpen]   = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const dropRef = useRef(null);
+  const notifRef = useRef(null);
+
+  const role        = currentUser?.role || 'participant';
+  const isAdmin     = role === 'admin';
+  const isOrganizer = role === 'organizer';
+  const isParticipant = role === 'participant';
+  const initials    = `${currentUser?.firstName?.charAt(0)||''}${currentUser?.lastName?.charAt(0)||''}`.toUpperCase();
+
+  useEffect(() => {
+    const h = (e) => { if (dropRef.current && !dropRef.current.contains(e.target)) setDropOpen(false); };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, []);
+
+  useEffect(() => {
+    const h = (e) => { if (notifRef.current && !notifRef.current.contains(e.target)) setNotifOpen(false); };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, []);
+
+  useEffect(() => {
+    const syncCartCount = () => {
+      try {
+        const storedCart = JSON.parse(localStorage.getItem('merchCart') || '[]');
+        const totalItems = Array.isArray(storedCart)
+          ? storedCart.reduce((sum, item) => sum + Number(item.quantity || 0), 0)
+          : 0;
+        setCartCount(totalItems);
+      } catch {
+        setCartCount(0);
+      }
+    };
+
+    syncCartCount();
+    window.addEventListener('storage', syncCartCount);
+    window.addEventListener('cart-updated', syncCartCount);
+
+    return () => {
+      window.removeEventListener('storage', syncCartCount);
+      window.removeEventListener('cart-updated', syncCartCount);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!currentUser || !isParticipant) {
+      setNotifications([]);
+      setUnreadNotifications(0);
+      return;
+    }
+
+    const loadNotifications = async () => {
+      try {
+        const data = await notificationApi.getMyNotifications();
+        setNotifications(data.notifications || []);
+        setUnreadNotifications(Number(data.unreadCount || 0));
+      } catch {
+        setNotifications([]);
+        setUnreadNotifications(0);
+      }
+    };
+
+    loadNotifications();
+    const intervalId = window.setInterval(loadNotifications, 30000);
+    return () => window.clearInterval(intervalId);
+  }, [currentUser, isParticipant]);
+
+  const handleNotificationToggle = async () => {
+    const nextOpen = !notifOpen;
+    setNotifOpen(nextOpen);
+
+    if (nextOpen && unreadNotifications > 0) {
+      try {
+        await notificationApi.markAllRead();
+        setNotifications((current) => current.map((item) => ({ ...item, read: true })));
+        setUnreadNotifications(0);
+      } catch {
+        // Keep the menu usable even if mark-as-read fails.
+      }
+    }
+  };
+
+  const handleSignOut = () => { signOut(); navigate('/signin'); };
+
+  const mainLinks = [
+    ...(isAdmin ? [{ to: '/admin-dashboard', label: 'Admin' }]
+      : isOrganizer ? [{ to: '/organizer-dashboard', label: 'Dashboard' }]
+      : [{ to: '/home', label: 'Home' }]),
+    ...(isAdmin ? [{ to: '/payments', label: 'Payments' }] : []),
+    ...((isAdmin || isParticipant) ? [{ to: '/merch', label: 'Merchandise' }] : []),
+    { to: '/events',        label: 'Events' },
+    { to: '/announcements', label: 'Announcements' },
+  ];
+
+  const dashItems = isAdmin ? [
+    { to: '/admin-dashboard',  label: 'Admin Dashboard',  description: 'Manage events, users and platform', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' },
+    { to: '/payments',         label: 'Payments',         description: 'Review merchandise orders and payments', icon: 'M17 9V7a5 5 0 00-10 0v2M5 9h14l1 10a2 2 0 01-2 2H6a2 2 0 01-2-2L5 9zm7 4v3m-3-3v1m6-1v1' },
+    { to: '/merch',            label: 'Merchandise',      description: 'Open the merchandise list', icon: 'M20 13V7a2 2 0 00-2-2h-3V4a2 2 0 10-4 0v1H8a2 2 0 00-2 2v6m14 0v5a2 2 0 01-2 2H8a2 2 0 01-2-2v-5m14 0H6' },
+    { to: '/user-management',  label: 'User Management',  description: 'View and manage all users', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z' },
+  ] : isOrganizer ? [
+    { to: '/organizer-dashboard', label: 'My Dashboard',  description: 'View and manage your events', icon: 'M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7' },
+    { to: '/events/create',       label: 'Create Event',  description: 'Submit a new campus event', icon: 'M12 4v16m8-8H4' },
+  ] : [];
+
+  const accItems = [
+    { to: '/profile',  label: 'My Profile', description: 'View and edit your details', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
+    { to: '/settings', label: 'Settings',   description: 'Notification preferences',   icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z' },
+  ];
+
+  return (
+    <nav className="sticky top-0 z-50 border-b border-white/10 bg-[linear-gradient(135deg,#092447,#0f3564)] shadow-[0_18px_48px_rgba(9,36,71,0.3)] backdrop-blur">
+      <div className="mx-auto max-w-7xl px-4">
+        <div className="flex h-18 items-center justify-between py-3">
+
+          {/* Brand */}
+          <Link to="/home" className="group flex flex-shrink-0 items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[linear-gradient(135deg,#f0b429,#d39712)] text-white shadow-[0_12px_26px_rgba(240,180,41,0.28)] transition-transform duration-200 group-hover:-translate-y-0.5">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <div className="hidden sm:block">
+              <p className="text-sm font-bold leading-tight text-white">SLIIT EventHub</p>
+              <p className="text-xs leading-tight text-slate-300/75">Campus Experience Platform</p>
+            </div>
+          </Link>
+
+          {/* Desktop nav */}
+          <div className="hidden items-center gap-1.5 rounded-full border border-white/10 bg-white/6 px-2 py-1 md:flex">
+            {mainLinks.map((l) => <NavLink key={l.to} {...l} />)}
+          </div>
+
+          {/* Right */}
+          <div className="flex items-center gap-2">
+            {isParticipant && (
+              <Link to="/cart" className="relative hidden h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/6 text-slate-200 transition-colors hover:bg-white/12 hover:text-white sm:flex">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.2 6h12.4M10 19a1 1 0 100 2 1 1 0 000-2zm8 0a1 1 0 100 2 1 1 0 000-2z"/>
+                </svg>
+                {cartCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold leading-[18px] text-center shadow-md">
+                    {cartCount > 99 ? '99+' : cartCount}
+                  </span>
+                )}
+              </Link>
+            )}
+            {isParticipant && (
+              <div className="relative hidden sm:block" ref={notifRef}>
+                <button
+                  type="button"
+                  onClick={handleNotificationToggle}
+                  className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/6 text-slate-200 transition-colors hover:bg-white/12 hover:text-white"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                  </svg>
+                  {unreadNotifications > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold leading-[18px] text-center shadow-md">
+                      {unreadNotifications > 99 ? '99+' : unreadNotifications}
+                    </span>
+                  )}
+                </button>
+
+                {notifOpen && (
+                  <div className="absolute right-0 z-50 mt-3 w-80 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_28px_60px_rgba(9,36,71,0.2)]">
+                    <div className="border-b border-slate-100 bg-[linear-gradient(135deg,rgba(26,79,156,0.08),rgba(240,180,41,0.12))] px-4 py-3">
+                      <p className="text-sm font-semibold text-slate-800">Notifications</p>
+                    </div>
+                    <div className="max-h-96 overflow-y-auto p-2">
+                      {notifications.length === 0 ? (
+                        <div className="px-3 py-6 text-center text-sm text-slate-500">
+                          No notifications yet.
+                        </div>
+                      ) : (
+                        notifications.map((item) => (
+                          <Link
+                            key={item.id}
+                            to={`/orders/view/${item.orderId}`}
+                            onClick={() => setNotifOpen(false)}
+                            state={{ from: '/home', label: 'Back to Home' }}
+                            className={`block rounded-2xl px-3 py-3 transition-colors ${
+                              item.read ? 'hover:bg-slate-50' : 'bg-[rgba(26,79,156,0.08)] hover:bg-[rgba(26,79,156,0.14)]'
+                            }`}
+                          >
+                            <p className="text-sm font-semibold text-slate-800">{item.title}</p>
+                            <p className="mt-1 text-xs leading-relaxed text-slate-600">{item.message}</p>
+                            <p className="mt-2 text-[11px] text-slate-400">
+                              {new Date(item.createdAt).toLocaleString()}
+                            </p>
+                          </Link>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Dropdown */}
+            <div className="relative" ref={dropRef}>
+              <button onClick={() => setDropOpen(!dropOpen)}
+                className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/6 px-2.5 py-1.5 transition-colors hover:bg-white/12">
+                <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[linear-gradient(135deg,#1a4f9c,#092447)] text-xs font-bold text-white">
+                  {currentUser?.profilePhoto ? <img src={currentUser.profilePhoto} alt="" className="w-full h-full object-cover"/> : initials || 'U'}
+                </div>
+                <div className="hidden md:block text-left">
+                  <p className="text-xs font-semibold leading-tight text-white">{currentUser?.firstName} {currentUser?.lastName}</p>
+                  <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium capitalize ${ROLE_BADGE[role]}`}>{role}</span>
+                </div>
+                <svg className={`w-4 h-4 text-slate-300 transition-transform duration-200 ${dropOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+
+              {dropOpen && (
+                <div className="absolute right-0 z-50 mt-3 w-72 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_28px_60px_rgba(9,36,71,0.2)]">
+                  {/* Header */}
+                  <div className="bg-[linear-gradient(135deg,#092447,#1a4f9c)] px-4 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[linear-gradient(135deg,#f0b429,#d39712)] font-bold text-white">
+                        {currentUser?.profilePhoto ? <img src={currentUser.profilePhoto} alt="" className="w-full h-full object-cover"/> : initials || 'U'}
+                      </div>
+                      <div>
+                        <p className="text-white text-sm font-semibold">{currentUser?.firstName} {currentUser?.lastName}</p>
+                        <p className="max-w-40 truncate text-xs text-slate-200/75">{currentUser?.email}</p>
+                        <span className={`inline-block text-xs px-2 py-0.5 rounded-full font-medium capitalize mt-1 ${ROLE_BADGE[role]}`}>{role}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-2">
+                    {dashItems.length > 0 && (
+                      <>
+                        <p className="px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Dashboard</p>
+                        {dashItems.map((i) => <DropdownItem key={i.to} {...i} onClick={() => setDropOpen(false)}/>)}
+                        <div className="my-2 border-t border-slate-100"/>
+                      </>
+                    )}
+                    <p className="px-3 pb-1 pt-1 text-xs font-semibold uppercase tracking-wider text-slate-400">Account</p>
+                    {accItems.map((i) => <DropdownItem key={i.to} {...i} onClick={() => setDropOpen(false)}/>)}
+                    <div className="my-2 border-t border-slate-100"/>
+                    <button onClick={() => { setDropOpen(false); handleSignOut(); }}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 group transition-colors">
+                      <div className="w-8 h-8 rounded-lg bg-red-100 group-hover:bg-red-200 flex items-center justify-center flex-shrink-0">
+                        <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                        </svg>
+                      </div>
+                      <span className="text-sm font-medium text-red-600">Sign Out</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Mobile hamburger */}
+            <button onClick={() => setMobileOpen(!mobileOpen)}
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/6 text-slate-200 transition-colors hover:bg-white/12 hover:text-white md:hidden">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {mobileOpen
+                  ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
+                  : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"/>}
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile menu */}
+        {mobileOpen && (
+          <div className="space-y-1 border-t border-white/10 py-3 md:hidden">
+            {mainLinks.map((l) => <MobileLink key={l.to} {...l} onClick={() => setMobileOpen(false)}/>)}
+            <div className="mt-2 border-t border-white/10 pt-2">
+              {isParticipant && <MobileLink to="/cart" label={`Cart${cartCount > 0 ? ` (${cartCount})` : ''}`} onClick={() => setMobileOpen(false)}/>}
+              <MobileLink to="/profile"  label="Profile"  onClick={() => setMobileOpen(false)}/>
+              <MobileLink to="/settings" label="Settings" onClick={() => setMobileOpen(false)}/>
+              <button onClick={() => { setMobileOpen(false); handleSignOut(); }}
+                className="w-full rounded-xl px-4 py-3 text-left text-sm font-medium text-red-300 transition-colors hover:bg-white/8">
+                Sign Out
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </nav>
+  );
+};
+
+export default NavBar;
