@@ -2,22 +2,23 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import eventApi from '../api/eventApi';
-import Button   from '../components/ui/Button';
+import Button from '../components/ui/Button';
+import FeedbackQRSection from '../components/feedback/FeedbackQRSection';
 
 const CATEGORY_STYLES = {
-  Academic:    'bg-blue-100   text-blue-700',
-  Workshop:    'bg-purple-100 text-purple-700',
-  Sports:      'bg-green-100  text-green-700',
-  Cultural:    'bg-pink-100   text-pink-700',
-  Social:      'bg-yellow-100 text-yellow-700',
-  Seminar:     'bg-orange-100 text-orange-700',
+  Academic: 'bg-blue-100   text-blue-700',
+  Workshop: 'bg-purple-100 text-purple-700',
+  Sports: 'bg-green-100  text-green-700',
+  Cultural: 'bg-pink-100   text-pink-700',
+  Social: 'bg-yellow-100 text-yellow-700',
+  Seminar: 'bg-orange-100 text-orange-700',
   Competition: 'bg-red-100    text-red-700',
 };
 
 const STATUS_STYLES = {
-  pending:   'bg-yellow-100 text-yellow-700',
-  approved:  'bg-green-100  text-green-700',
-  rejected:  'bg-red-100    text-red-700',
+  pending: 'bg-yellow-100 text-yellow-700',
+  approved: 'bg-green-100  text-green-700',
+  rejected: 'bg-red-100    text-red-700',
   completed: 'bg-gray-100   text-gray-700',
   cancelled: 'bg-red-100    text-red-600',
 };
@@ -27,15 +28,15 @@ const formatDate = (d) => new Date(d).toLocaleDateString('en-GB', {
 });
 
 const EventDetailPage = () => {
-  const { id }        = useParams();
-  const navigate      = useNavigate();
+  const { id } = useParams();
+  const navigate = useNavigate();
   const { currentUser } = useSelector((s) => s.user);
 
-  const [event,        setEvent]        = useState(null);
-  const [isLoading,    setIsLoading]    = useState(true);
-  const [error,        setError]        = useState('');
+  const [event, setEvent] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
-  const [actionMsg,    setActionMsg]    = useState('');
+  const [actionMsg, setActionMsg] = useState('');
 
   // Fetch event details
   useEffect(() => {
@@ -62,7 +63,7 @@ const EventDetailPage = () => {
     <div className="flex flex-col items-center justify-center py-20">
       <p className="text-gray-500 mb-4">{error}</p>
       <Link to="/events"
-            className="text-sm text-gray-600 hover:underline">
+        className="text-sm text-gray-600 hover:underline">
         Back to Events
       </Link>
     </div>
@@ -70,15 +71,25 @@ const EventDetailPage = () => {
 
   if (!event) return null;
 
-  const isOwner      = currentUser?.id === event.createdBy?.toString() ||
-                       currentUser?.id === event.createdBy;
-  const isAdmin      = currentUser?.role === 'admin';
+  const isOwner = currentUser?.id === event.createdBy?.toString() ||
+    currentUser?.id === event.createdBy;
+  const isAdmin = currentUser?.role === 'admin';
   const isRegistered = event.participants?.some(
     (p) => p.userId === currentUser?.id
   );
-  const spotsLeft    = event.spotsRemaining ?? (event.capacity - event.participantCount);
-  const isPast       = new Date(event.eventDate) < new Date();
-  const imageUrl     = eventApi.getImageUrl(event.coverImage);
+  const spotsLeft = event.spotsRemaining ?? (event.capacity - event.participantCount);
+  const isPast = new Date(event.eventDate) < new Date();
+  const imageUrl = eventApi.getImageUrl(event.coverImage);
+
+
+  const owner = currentUser?.id === event.createdBy._id?.toString() ||
+    currentUser?.id === event.createdBy._id;
+
+
+  console.log('currentUser:', currentUser.id);
+  console.log('event Created By:', event.createdBy._id);
+  console.log('isAdmin:', isAdmin);
+  console.log('owner:', owner);
 
   // Register for event
   const handleRegister = async () => {
@@ -149,7 +160,7 @@ const EventDetailPage = () => {
       {imageUrl && (
         <div className="w-full h-64 rounded-xl overflow-hidden bg-gray-100">
           <img src={imageUrl} alt={event.title}
-               className="w-full h-full object-cover"/>
+            className="w-full h-full object-cover" />
         </div>
       )}
 
@@ -218,9 +229,9 @@ const EventDetailPage = () => {
               <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center
                               justify-center flex-shrink-0 mt-0.5">
                 <svg className="w-4 h-4 text-gray-500" fill="none"
-                     stroke="currentColor" viewBox="0 0 24 24">
+                  stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round"
-                        strokeWidth="2" d={icon}/>
+                    strokeWidth="2" d={icon} />
                 </svg>
               </div>
               <div>
@@ -244,7 +255,7 @@ const EventDetailPage = () => {
           <div className="flex flex-wrap gap-1.5">
             {event.tags.map((tag) => (
               <span key={tag}
-                    className="px-2.5 py-1 rounded-full bg-gray-100
+                className="px-2.5 py-1 rounded-full bg-gray-100
                                text-gray-600 text-xs font-medium">
                 #{tag}
               </span>
@@ -273,9 +284,9 @@ const EventDetailPage = () => {
                   <div className="w-5 h-5 rounded-full bg-green-500 flex
                                   items-center justify-center">
                     <svg className="w-3 h-3 text-white" fill="none"
-                         stroke="currentColor" viewBox="0 0 24 24">
+                      stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round"
-                            strokeWidth="2.5" d="M5 13l4 4L19 7"/>
+                        strokeWidth="2.5" d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
                   <span className="text-sm font-medium text-green-700">
@@ -350,6 +361,36 @@ const EventDetailPage = () => {
           </div>
         )}
       </div>
+
+      <FeedbackQRSection
+        eventId={id}
+        isOwner={isOwner}
+        isAdmin={isAdmin}
+        status={event.status}
+        setActionMsg={setActionMsg}
+      />
+
+      {/* 🔹 View Feedback Section */}
+      {(isOwner || isAdmin) && ['approved', 'completed'].includes(event.status) && (
+        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex items-center justify-between">
+
+          <div>
+            <h3 className="text-md font-semibold text-gray-800">
+              Event Feedback
+            </h3>
+            <p className="text-sm text-gray-500">
+              View ratings and comments from participants
+            </p>
+          </div>
+
+          <Link to={`/events/${id}/feedback`}>
+            <Button variant="secondary">
+              View Feedback →
+            </Button>
+          </Link>
+
+        </div>
+      )}
     </div>
   );
 };

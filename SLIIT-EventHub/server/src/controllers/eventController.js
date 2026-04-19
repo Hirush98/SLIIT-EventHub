@@ -48,7 +48,12 @@ const buildEventResponse = (event) => ({
   hasConflict:     event.hasConflict,
   conflictDetails: event.conflictDetails,
   organizerName:   event.organizerName,
-  createdBy:       event.createdBy,
+  // Always return createdBy as a plain string ID
+  // event.createdBy can be either a populated object or a raw ObjectId
+  // In both cases we extract just the string ID so frontend comparison works
+  createdBy: event.createdBy?._id
+    ? event.createdBy._id.toString()
+    : event.createdBy?.toString(),
   participantCount: event.participants.length,
   createdAt:       event.createdAt,
   updatedAt:       event.updatedAt
