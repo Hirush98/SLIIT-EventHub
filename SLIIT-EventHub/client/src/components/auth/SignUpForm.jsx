@@ -6,12 +6,10 @@ import useAuth from '../../hooks/useAuth';
 import InputField from '../ui/InputField';
 import Button from '../ui/Button';
 
-// helper: capitalize each word
 const capitalizeWords = (value) => {
   return value.replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
-// Yup checks each field before the form submits
 const signUpSchema = Yup.object({
   firstName: Yup.string()
     .matches(/^[a-zA-Z ]+$/, 'Only letters and spaces are allowed')
@@ -39,8 +37,6 @@ const signUpSchema = Yup.object({
     .oneOf([true], 'You must accept the terms to continue'),
 });
 
-// The form component itself
-
 const SignUpForm = () => {
   const { signUp, googleSignIn, isLoading, error, clearError } = useAuth();
   const navigate = useNavigate();
@@ -48,8 +44,12 @@ const SignUpForm = () => {
 
   const formik = useFormik({
     initialValues: {
-      firstName: '', lastName: '', email: '',
-      password: '', confirmPassword: '', acceptTerms: false,
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      acceptTerms: false,
     },
     validationSchema: signUpSchema,
     onSubmit: async (values) => {
@@ -74,23 +74,21 @@ const SignUpForm = () => {
 
   return (
     <div className="w-full max-w-md mx-auto">
-
       {error && (
         <div className="mb-5 flex items-start gap-3 px-4 py-3 rounded-lg bg-red-50 border border-red-200">
           <svg className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" clipRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"/>
+            <path fillRule="evenodd" clipRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" />
           </svg>
           <p className="flex-1 text-sm text-red-700">{error}</p>
           <button onClick={clearError} className="text-red-400 hover:text-red-600">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
       )}
-      
-      <form onSubmit={formik.handleSubmit} className="space-y-4" noValidate>
 
+      <form onSubmit={formik.handleSubmit} className="space-y-4" noValidate>
         <div className="grid grid-cols-2 gap-3">
           <InputField
             label="First Name"
@@ -99,8 +97,6 @@ const SignUpForm = () => {
             value={formik.values.firstName}
             onChange={(e) => {
               let value = e.target.value;
-
-              // allow letters + spaces only
               if (/^[a-zA-Z ]*$/.test(value)) {
                 value = capitalizeWords(value);
                 formik.setFieldValue('firstName', value);
@@ -120,7 +116,6 @@ const SignUpForm = () => {
             value={formik.values.lastName}
             onChange={(e) => {
               let value = e.target.value;
-
               if (/^[a-zA-Z ]*$/.test(value)) {
                 value = capitalizeWords(value);
                 formik.setFieldValue('lastName', value);
@@ -153,22 +148,46 @@ const SignUpForm = () => {
           required
         />
 
-        <InputField label="Password" id="password" type="password" placeholder="Create a strong password"
-          value={formik.values.password} onChange={formik.handleChange}
-          onBlur={formik.handleBlur} error={formik.errors.password}
-          touched={formik.touched.password} disabled={isLoading} required />
+        <InputField
+          label="Password"
+          id="password"
+          type="password"
+          placeholder="Create a strong password"
+          value={formik.values.password}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.errors.password}
+          touched={formik.touched.password}
+          disabled={isLoading}
+          required
+        />
 
-        <InputField label="Confirm Password" id="confirmPassword" type="password" placeholder="Repeat your password"
-          value={formik.values.confirmPassword} onChange={formik.handleChange}
-          onBlur={formik.handleBlur} error={formik.errors.confirmPassword}
-          touched={formik.touched.confirmPassword} disabled={isLoading} required />
+        <InputField
+          label="Confirm Password"
+          id="confirmPassword"
+          type="password"
+          placeholder="Repeat your password"
+          value={formik.values.confirmPassword}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.errors.confirmPassword}
+          touched={formik.touched.confirmPassword}
+          disabled={isLoading}
+          required
+        />
 
         <div className="flex flex-col gap-1">
           <div className="flex items-start gap-2">
-            <input id="acceptTerms" name="acceptTerms" type="checkbox"
-              checked={formik.values.acceptTerms} onChange={formik.handleChange}
-              onBlur={formik.handleBlur} disabled={isLoading}
-              className="mt-0.5 h-4 w-4 rounded border-gray-300 text-gray-800 focus:ring-gray-400 cursor-pointer" />
+            <input
+              id="acceptTerms"
+              name="acceptTerms"
+              type="checkbox"
+              checked={formik.values.acceptTerms}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              disabled={isLoading}
+              className="mt-0.5 h-4 w-4 rounded border-gray-300 text-gray-800 focus:ring-gray-400 cursor-pointer"
+            />
             <label htmlFor="acceptTerms" className="text-xs text-gray-600 leading-relaxed cursor-pointer">
               I agree to the{' '}
               <a href="#" className="text-gray-800 underline hover:text-gray-600">Terms and Conditions</a>
@@ -192,9 +211,9 @@ const SignUpForm = () => {
         <hr className="flex-1 border-gray-200" />
       </div>
 
-      <div className="flex justify-center">
+      <div className="flex justify-center w-full">
         <GoogleOAuthProvider clientId={clientId || ''}>
-          <GoogleLogin onSuccess={handleGoogleSuccess} onError={() => {}} width="100%" />
+          <GoogleLogin onSuccess={handleGoogleSuccess} onError={() => {}} width={320} />
         </GoogleOAuthProvider>
       </div>
 

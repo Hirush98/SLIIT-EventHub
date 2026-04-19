@@ -141,12 +141,12 @@ const SignInForm = () => {
       </div>
 
       {/* Google */}
-      <div className="flex justify-center">
+      <div className="flex justify-center w-full">
         <GoogleOAuthProvider clientId={clientId || ''}>
           <GoogleLogin
             onSuccess={handleGoogleSuccess}
             onError={() => {}}
-            width="100%"
+            width={320}
           />
         </GoogleOAuthProvider>
       </div>
