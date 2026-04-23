@@ -15,6 +15,11 @@ test.describe('Authentication: Logout', () => {
     await expect(signOutBtn).toBeVisible();
     await signOutBtn.click();
 
+    // Verify localStorage is cleared
+    await expect.poll(async () => {
+      return await page.evaluate(() => localStorage.getItem('eh_token'));
+    }).toBeNull();
+
     // Should redirect to signin
     await expect(page).toHaveURL('/signin');
 
