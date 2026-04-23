@@ -1,28 +1,15 @@
 const express   = require('express');
 const cors      = require('cors');
 const dotenv    = require('dotenv');
-const path      = require('path');
 const connectDB = require('./src/config/db');
 
-dotenv.config({ path: path.join(__dirname, '.env') });
+dotenv.config();
 connectDB();
 
 const app = express();
 
-const allowedOrigins = new Set([
-  process.env.CLIENT_URL || 'http://localhost:3000',
-  'http://localhost:3000',
-  'http://127.0.0.1:3000',
-]);
-
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow non-browser requests (no Origin header) and known frontend origins.
-    if (!origin || allowedOrigins.has(origin)) {
-      return callback(null, true);
-    }
-    return callback(new Error(`CORS blocked for origin: ${origin}`));
-  },
+  origin: process.env.CLIENT_URL || 'http://localhost:5173',
   credentials: true
 }));
 app.use(express.json());
@@ -42,7 +29,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`SLIIT EventHub server running on port ${PORT}`);
 });
