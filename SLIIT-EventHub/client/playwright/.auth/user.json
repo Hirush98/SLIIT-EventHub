@@ -6,15 +6,15 @@
       "localStorage": [
         {
           "name": "eh_token",
-          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTllNjM3YTNjZmMwMjFkZjNiZDlhNCIsInJvbGUiOiJwYXJ0aWNpcGFudCIsImlhdCI6MTc3NjkzNjUwMywiZXhwIjoxNzc3MDIyOTAzfQ.V79sDkyAydK4vE0ONhQpk5ntzdfw9kVdWKzEpZ7WmYI"
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZWE0MzlhMmM2MGE2OGY1NzcyYmNhMSIsInJvbGUiOiJwYXJ0aWNpcGFudCIsImlhdCI6MTc3Njk2MDQxMCwiZXhwIjoxNzc3MDQ2ODEwfQ.4XYUm3czN5p1cg0pBbxL1Wmg_RBCbrlwpj3mZTc7fis"
         },
         {
           "name": "eh_user",
-          "value": "{\"id\":\"69e9e637a3cfc021df3bd9a4\",\"firstName\":\"Setup\",\"lastName\":\"User\",\"email\":\"setupuser1776936502438@example.com\",\"role\":\"participant\",\"profilePhoto\":\"\"}"
+          "value": "{\"id\":\"69ea439a2c60a68f5772bca1\",\"firstName\":\"Setup\",\"lastName\":\"User\",\"email\":\"setupuser1776960407054@example.com\",\"role\":\"participant\",\"profilePhoto\":\"\"}"
         },
         {
           "name": "eh_refresh",
-          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZTllNjM3YTNjZmMwMjFkZjNiZDlhNCIsImlhdCI6MTc3NjkzNjUwMywiZXhwIjoxNzc3NTQxMzAzfQ.5eANEha-do-IbYnUoKx4ZQBFxGVT2WJsySJDv3Ns31Q"
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZWE0MzlhMmM2MGE2OGY1NzcyYmNhMSIsImlhdCI6MTc3Njk2MDQxMCwiZXhwIjoxNzc3NTY1MjEwfQ.lC8zX5d291MOi3Jj9G-qo09TG3rrU9cz843cvPp4Yyk"
         }
       ]
     }

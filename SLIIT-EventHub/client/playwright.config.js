@@ -34,7 +34,7 @@ export default defineConfig({
 
     {
       name: 'authenticated',
-      testIgnore: /(registration|login|auth\.setup)\.spec?\.js/,
+      testIgnore: /(registration|login|auth\.setup|feedback)\.spec?\.js/,
       use: { 
         ...devices['Desktop Chrome'],
         // Use the storage state from the setup project
@@ -46,7 +46,7 @@ export default defineConfig({
     // Unauthenticated tests
     {
       name: 'unauthenticated',
-      testMatch: /(registration|login)\.spec\.js/,
+      testMatch: /(registration|login|feedback)\.spec\.js/,
       use: { 
         ...devices['Desktop Chrome'],
         storageState: undefined, 

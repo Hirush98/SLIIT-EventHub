@@ -1,6 +1,18 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Authentication: Login', () => {
+  const adminEmail = 'testuser1@gmail.com';
+  const adminPassword = 'Test@1234';
+
+  test('should login as admin with provided credentials', async ({ page }) => {
+    await page.goto('/signin');
+    await page.getByLabel('Email Address').fill(adminEmail);
+    await page.getByLabel('Password').fill(adminPassword);
+    await page.getByRole('button', { name: 'Sign In' }).click();
+    
+    await expect(page).toHaveURL('/home', { timeout: 15000 });
+  });
+
   test('should login with valid credentials', async ({ page }) => {
     // We can use a known user here, or the one created in setup
     // But since this test project uses 'auth' project which has undefined storageState,
