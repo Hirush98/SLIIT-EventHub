@@ -24,3 +24,17 @@ SLIIT-EventHub.zip
 # IDE
 .vscode/
 .idea/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.auth/
+/playwright/.cache/
+client/test-results/
+client/playwright-report/
+client/blob-report/
+client/playwright/.auth/
+client/playwright/.cache/
+client/test_output*.txt
+/test-output/
