@@ -407,7 +407,9 @@ const NavBar = () => {
                     {dashItems.length > 0 && (
                       <>
                         <p className="px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Dashboard</p>
-                        {dashItems.map((item) => <DropdownItem key={item.to} {...item} onClick={() => setDropOpen(false)} />)}
+                        <div className="max-h-64 overflow-y-auto">
+                          {dashItems.map((item) => <DropdownItem key={item.to} {...item} onClick={() => setDropOpen(false)} />)}
+                        </div>
                         <div className="my-2 border-t border-slate-100" />
                       </>
                     )}
