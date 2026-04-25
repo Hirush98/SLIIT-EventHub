@@ -65,17 +65,17 @@ const DropdownItem = ({ to, label, icon, description, onClick, danger }) => (
   <Link
     to={to}
     onClick={onClick}
-    className={`flex items-start gap-3 rounded-xl px-4 py-3 transition-all duration-150 group ${
+    className={`flex items-start gap-3 rounded-xl px-3 sm:px-4 py-3 transition-all duration-150 group ${
       danger ? 'hover:bg-red-50' : 'hover:bg-slate-50'
     }`}
   >
     <div
-      className={`mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg ${
+      className={`mt-0.5 flex h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 items-center justify-center rounded-lg ${
         danger ? 'bg-red-100 group-hover:bg-red-200' : 'bg-slate-100 group-hover:bg-[rgba(26,79,156,0.12)]'
       }`}
     >
       <svg
-        className={`h-4 w-4 ${danger ? 'text-red-500' : 'text-slate-600 group-hover:text-[#1a4f9c]'}`}
+        className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${danger ? 'text-red-500' : 'text-slate-600 group-hover:text-[#1a4f9c]'}`}
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -83,9 +83,9 @@ const DropdownItem = ({ to, label, icon, description, onClick, danger }) => (
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={icon} />
       </svg>
     </div>
-    <div>
-      <p className={`text-sm font-medium ${danger ? 'text-red-600' : 'text-slate-800'}`}>{label}</p>
-      {description && <p className="mt-0.5 text-xs leading-relaxed text-slate-400">{description}</p>}
+    <div className="min-w-0 flex-1">
+      <p className={`text-sm font-medium truncate ${danger ? 'text-red-600' : 'text-slate-800'}`}>{label}</p>
+      {description && <p className="mt-0.5 text-xs leading-relaxed text-slate-400 line-clamp-2">{description}</p>}
     </div>
   </Link>
 );
@@ -103,11 +103,11 @@ const MobileLink = ({ to, label, icon, onClick }) => {
       }`}
     >
       {icon && (
-        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="h-5 w-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={icon} />
         </svg>
       )}
-      {label}
+      <span className="flex-1">{label}</span>
     </Link>
   );
 };
@@ -281,11 +281,11 @@ const NavBar = () => {
         }}
       />
 
-      <div className="mx-auto max-w-7xl px-4">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between py-3">
-          <Link to="/home" className="group flex flex-shrink-0 items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-[linear-gradient(135deg,#f0b429,#d39712)] text-white shadow-[0_12px_26px_rgba(240,180,41,0.28)] transition-transform duration-200 group-hover:-translate-y-0.5">
-              <SLIITLogo size={36} />
+          <Link to="/home" className="group flex flex-shrink-0 items-center gap-2 sm:gap-3">
+            <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center overflow-hidden rounded-xl bg-[linear-gradient(135deg,#f0b429,#d39712)] text-white shadow-[0_12px_26px_rgba(240,180,41,0.28)] transition-transform duration-200 group-hover:-translate-y-0.5">
+              <SLIITLogo size={32} />
             </div>
             <div className="hidden sm:block">
               <p className="text-sm font-bold leading-tight text-white">SLIIT EventHub</p>
@@ -293,18 +293,18 @@ const NavBar = () => {
             </div>
           </Link>
 
-          <div className="hidden items-center gap-1.5 rounded-full border border-white/10 bg-white/6 px-2 py-1 md:flex">
+          <div className="hidden items-center gap-1.5 rounded-full border border-white/10 bg-white/6 px-2 py-1 lg:flex">
             {mainLinks.map((link) => <NavLink key={link.to} {...link} />)}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             {isParticipant && (
-              <Link to="/cart" className="relative hidden h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/6 text-slate-200 transition-colors hover:bg-white/12 hover:text-white sm:flex">
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <Link to="/cart" className="relative hidden h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl border border-white/10 bg-white/6 text-slate-200 transition-colors hover:bg-white/12 hover:text-white sm:flex">
+                <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.2 6h12.4M10 19a1 1 0 100 2 1 1 0 000-2zm8 0a1 1 0 100 2 1 1 0 000-2z" />
                 </svg>
                 {cartCount > 0 && (
-                  <span className="absolute -right-1.5 -top-1.5 h-[18px] min-w-[18px] rounded-full bg-red-500 px-1 text-center text-[10px] font-bold leading-[18px] text-white shadow-md">
+                  <span className="absolute -right-1 -top-1 sm:-right-1.5 sm:-top-1.5 h-4 w-4 sm:h-[18px] sm:min-w-[18px] rounded-full bg-red-500 px-1 text-center text-[10px] font-bold leading-4 sm:leading-[18px] text-white shadow-md">
                     {cartCount > 99 ? '99+' : cartCount}
                   </span>
                 )}
@@ -316,20 +316,20 @@ const NavBar = () => {
                 <button
                   type="button"
                   onClick={handleNotificationToggle}
-                  className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/6 text-slate-200 transition-colors hover:bg-white/12 hover:text-white"
+                  className="relative flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl border border-white/10 bg-white/6 text-slate-200 transition-colors hover:bg-white/12 hover:text-white"
                 >
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                   </svg>
                   {unreadNotifications > 0 && (
-                    <span className="absolute -right-1.5 -top-1.5 h-[18px] min-w-[18px] rounded-full bg-red-500 px-1 text-center text-[10px] font-bold leading-[18px] text-white shadow-md">
+                    <span className="absolute -right-1 -top-1 sm:-right-1.5 sm:-top-1.5 h-4 w-4 sm:h-[18px] sm:min-w-[18px] rounded-full bg-red-500 px-1 text-center text-[10px] font-bold leading-4 sm:leading-[18px] text-white shadow-md">
                       {unreadNotifications > 99 ? '99+' : unreadNotifications}
                     </span>
                   )}
                 </button>
 
                 {notifOpen && (
-                  <div className="absolute right-0 z-50 mt-3 w-80 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_28px_60px_rgba(9,36,71,0.2)]">
+                  <div className="absolute right-0 z-50 mt-3 w-72 sm:w-80 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_28px_60px_rgba(9,36,71,0.2)]">
                     <div className="border-b border-slate-100 bg-[linear-gradient(135deg,rgba(26,79,156,0.08),rgba(240,180,41,0.12))] px-4 py-3">
                       <p className="text-sm font-semibold text-slate-800">Notifications</p>
                     </div>
@@ -366,12 +366,12 @@ const NavBar = () => {
             <div className="relative" ref={dropRef}>
               <button
                 onClick={() => setDropOpen((open) => !open)}
-                className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/6 px-2.5 py-1.5 transition-colors hover:bg-white/12"
+                className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/6 px-2 py-1 sm:px-2.5 sm:py-1.5 transition-colors hover:bg-white/12"
               >
-                <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[linear-gradient(135deg,#1a4f9c,#092447)] text-xs font-bold text-white">
+                <div className="flex h-8 w-8 sm:h-9 sm:w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[linear-gradient(135deg,#1a4f9c,#092447)] text-xs font-bold text-white">
                   {currentUser?.profilePhoto ? <img src={currentUser.profilePhoto} alt="" className="h-full w-full object-cover" /> : initials || 'U'}
                 </div>
-                <div className="hidden text-left md:block">
+                <div className="hidden text-left lg:block">
                   <p className="text-xs font-semibold leading-tight text-white">
                     {currentUser?.firstName} {currentUser?.lastName}
                   </p>
@@ -385,17 +385,17 @@ const NavBar = () => {
               </button>
 
               {dropOpen && (
-                <div className="absolute right-0 z-50 mt-3 w-72 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_28px_60px_rgba(9,36,71,0.2)]">
-                  <div className="bg-[linear-gradient(135deg,#092447,#1a4f9c)] px-4 py-4">
+                <div className="absolute right-0 z-50 mt-3 w-64 sm:w-72 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_28px_60px_rgba(9,36,71,0.2)]">
+                  <div className="bg-[linear-gradient(135deg,#092447,#1a4f9c)] px-3 py-3 sm:px-4 sm:py-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[linear-gradient(135deg,#f0b429,#d39712)] font-bold text-white">
+                      <div className="flex h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[linear-gradient(135deg,#f0b429,#d39712)] font-bold text-white">
                         {currentUser?.profilePhoto ? <img src={currentUser.profilePhoto} alt="" className="h-full w-full object-cover" /> : initials || 'U'}
                       </div>
-                      <div>
-                        <p className="text-sm font-semibold text-white">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-semibold text-white truncate">
                           {currentUser?.firstName} {currentUser?.lastName}
                         </p>
-                        <p className="max-w-40 truncate text-xs text-slate-200/75">{currentUser?.email}</p>
+                        <p className="max-w-full truncate text-xs text-slate-200/75">{currentUser?.email}</p>
                         <span className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium capitalize ${ROLE_BADGE[role] || ROLE_BADGE.participant}`}>
                           {role}
                         </span>
@@ -403,11 +403,13 @@ const NavBar = () => {
                     </div>
                   </div>
 
-                  <div className="p-2">
+                  <div className="p-1 sm:p-2">
                     {dashItems.length > 0 && (
                       <>
                         <p className="px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Dashboard</p>
-                        {dashItems.map((item) => <DropdownItem key={item.to} {...item} onClick={() => setDropOpen(false)} />)}
+                        <div className="max-h-48 sm:max-h-64 overflow-y-auto">
+                          {dashItems.map((item) => <DropdownItem key={item.to} {...item} onClick={() => setDropOpen(false)} />)}
+                        </div>
                         <div className="my-2 border-t border-slate-100" />
                       </>
                     )}
@@ -421,7 +423,7 @@ const NavBar = () => {
                         setDropOpen(false);
                         handleSignOut();
                       }}
-                      className="group flex w-full items-center gap-3 rounded-xl px-4 py-3 transition-colors hover:bg-red-50"
+                      className="group flex w-full items-center gap-3 rounded-xl px-3 sm:px-4 py-3 transition-colors hover:bg-red-50"
                     >
                       <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-red-100 group-hover:bg-red-200">
                         <svg className="h-4 w-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -437,9 +439,9 @@ const NavBar = () => {
 
             <button
               onClick={() => setMobileOpen((open) => !open)}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/6 text-slate-200 transition-colors hover:bg-white/12 hover:text-white md:hidden"
+              className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl border border-white/10 bg-white/6 text-slate-200 transition-colors hover:bg-white/12 hover:text-white lg:hidden"
             >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {mobileOpen
                   ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                   : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />}
@@ -449,7 +451,7 @@ const NavBar = () => {
         </div>
 
         {mobileOpen && (
-          <div className="space-y-1 border-t border-white/10 py-3 md:hidden">
+          <div className="space-y-1 border-t border-white/10 py-3 lg:hidden">
             {mainLinks.map((link) => <MobileLink key={link.to} {...link} onClick={() => setMobileOpen(false)} />)}
             <div className="mt-2 border-t border-white/10 pt-2">
               {isParticipant && (
